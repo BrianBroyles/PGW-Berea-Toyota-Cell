@@ -2900,26 +2900,25 @@ Public Class frmMain
 		btn = DirectCast(sender, Button)
 		Select Case btn.Name
 			Case btnBacklight.Name
-				If TODO Then  'PLC_DriverCLX.Read(PLC_Tags.plcTag_Backlight) Then
-					'PLC_DriverCLX.Write("Vis_Lights.2", 0)
+				If PLC_DriverCLX.Read(PLC_Tags.plcTag_Backlight) Then
+					PLC_DriverCLX.Write("Vis_Lights.2", 0)
 				Else
-					'PLC_DriverCLX.Write("Vis_Lights.2", 1)
+					PLC_DriverCLX.Write("Vis_Lights.2", 1)
 				End If
 			Case btnOverheadLight.Name
-				If TODO Then 'PLC_DriverCLX.Read(PLC_Tags.plcTag_OverLight) Then
-					'PLC_DriverCLX.Write("Vis_Lights.0", 0)
+				If PLC_DriverCLX.Read(PLC_Tags.plcTag_OverLight) Then
+					PLC_DriverCLX.Write("Vis_Lights.0", 0)
 				Else
-					'PLC_DriverCLX.Write("Vis_Lights.0", 1)
+					PLC_DriverCLX.Write("Vis_Lights.0", 1)
 				End If
 			Case btnBacklightPrimer.Name
-				If TODO Then 'PLC_DriverCLX.Read(PLC_Tags.plcTag_PrimerLight) Then
-					'PLC_DriverCLX.Write("Vis_Lights.6", 0)
+				If PLC_DriverCLX.Read(PLC_Tags.plcTag_PrimerLight) Then
+					PLC_DriverCLX.Write("Vis_Lights.6", 0)
 				Else
-					'PLC_DriverCLX.Write("Vis_Lights.6", 1)
+					PLC_DriverCLX.Write("Vis_Lights.6", 1)
 				End If
 		End Select
 		GC.Collect()
-		'       GC.WaitForPendingFinalizers()
 	End Sub
 
 	Private Sub CheckThresholds(ByRef Side As Integer)
