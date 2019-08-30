@@ -37,7 +37,7 @@
 			InputString_Renamed = UCase(InputString_Renamed)
 			OperatorPassWord = frmDataBase.GetValue("Password", "Value", "Op Password")
 			EngineeringPassWord = frmDataBase.GetValue("Password", "Value", "Eng Password")
-			BackdoorPassword = "mwmotion921"
+			BackdoorPassword = "mwmotion"
 			Select Case InputString_Renamed
 				Case UCase(EngineeringPassWord)
 					frmMain.ActivatePassword(frmMain.EngPassword)

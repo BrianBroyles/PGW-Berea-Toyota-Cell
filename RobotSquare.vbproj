@@ -370,11 +370,6 @@
     <None Include="Resources\tri.png" />
     <Content Include="ClxDriver.dll" />
     <Content Include="RobotSquare.ico" />
-    <None Include="RobotSquare_1_TemporaryKey.pfx" />
-    <None Include="RobotSquare_2_TemporaryKey.pfx" />
-    <None Include="RobotSquare_3_TemporaryKey.pfx" />
-    <None Include="RobotSquare_4_TemporaryKey.pfx" />
-    <None Include="RobotSquare_TemporaryKey.pfx" />
     <None Include="SampleINIfiles\CLX.ini" />
     <None Include="SampleINIfiles\TC.ini" />
   </ItemGroup>

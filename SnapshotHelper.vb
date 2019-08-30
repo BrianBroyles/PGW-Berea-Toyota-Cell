@@ -20,7 +20,8 @@ Public Class SnapshotHelper
 			Camera.Timing.PixelClock.GetRange(s32Min, s32max, s32inc)
 			Camera.Timing.PixelClock.Set(s32max)
 			If (statusRet <> uEye.Defines.Status.Success) Then
-				MessageBox.Show("Camera initializing failed")
+				'TODO
+				'MessageBox.Show("Camera initializing failed")
 				Return False
 			End If
 			Camera.PixelFormat.Set(uEye.Defines.ColorMode.Mono8)
@@ -33,7 +34,7 @@ Public Class SnapshotHelper
 			' all good
 			Return True
 		Catch ex As Exception
-			frmMain.ShowVBErrors("Failed to InitCamera " & CameraId & " ", ex.Message)
+			'TODO frmMain.ShowVBErrors("Failed to InitCamera " & CameraId & " ", ex.Message)
 			Return False
 		End Try
 	End Function
@@ -67,7 +68,7 @@ Public Class SnapshotHelper
 			rawImageSize = DetermineRawImageSize()
 			Dim buf(rawImageSize - 1) As Byte
 			'Successful initialization of camera
-			If Not isOnline() Then Return False
+			'If Not isOnline() Then Return False
 			'Freeze Video
 			Camera.Acquisition.Freeze(uEye.Defines.DeviceParameter.Wait)
 			'Get memory id number
@@ -177,7 +178,6 @@ Public Class SnapshotHelper
 							If Not Connected(i) Then OnlineMessage = OnlineMessage & "Primer/Tape"
 							frmMain.ImageBracketPrimer.Load(ConfigPath & "NoImage.bmp")
 							frmMain.ImageBracketTape1.Load(ConfigPath & "NoImage.bmp")
-
 					End Select
 				Next
 				frmShowError.lblErrorMessage.Text = OnlineMessage & " Camera"

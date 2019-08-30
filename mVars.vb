@@ -196,23 +196,16 @@ Module mVars
 	Public BracketTape1BlobDataBaseNames = {"Bracket Tape Blob 1 PosXRef", "Bracket Tape Blob 1 PosYRef", "Bracket Tape Blob 1 WidthRef", "Bracket Tape Blob 1 HeightRef", "Bracket Tape Blob 1 PosRRef"}
 	Public BracketTape2BlobDataBaseNames = {"Bracket Tape Blob 2 PosXRef", "Bracket Tape Blob 2 PosYRef", "Bracket Tape Blob 2 WidthRef", "Bracket Tape Blob 2 HeightRef", "Bracket Tape Blob 2 PosRRef"}
 	Public BracketTape3BlobDataBaseNames = {"Bracket Tape Blob 3 PosXRef", "Bracket Tape Blob 3 PosYRef", "Bracket Tape Blob 3 WidthRef", "Bracket Tape Blob 3 HeightRef", "Bracket Tape Blob 3 PosRRef"}
-   Public BracketTape4BlobDataBaseNames = {"Bracket Tape Blob 4 PosXRef", "Bracket Tape Blob 4 PosYRef", "Bracket Tape Blob 4 WidthRef", "Bracket Tape Blob 4 HeightRef", "Bracket Tape Blob 4 PosRRef"}
-   Public BracketCover1BlobDataBaseNames = {"Bracket Cover Blob 1 PosXRef", "Bracket Cover Blob 1 PosYRef", "Bracket Cover Blob 1 WidthRef", "Bracket Cover Blob 1 HeightRef", "Bracket Cover Blob 1 PosRRef"}
-   Public BracketCover2BlobDataBaseNames = {"Bracket Cover Blob 2 PosXRef", "Bracket Cover Blob 2 PosYRef", "Bracket Cover Blob 2 WidthRef", "Bracket Cover Blob 2 HeightRef", "Bracket Cover Blob 2 PosRRef"}
-   Public BracketCover3BlobDataBaseNames = {"Bracket Cover Blob 3 PosXRef", "Bracket Cover Blob 3 PosYRef", "Bracket Cover Blob 3 WidthRef", "Bracket Cover Blob 3 HeightRef", "Bracket Cover Blob 3 PosRRef"}
-   Public BracketCover4BlobDataBaseNames = {"Bracket Cover Blob 4 PosXRef", "Bracket Cover Blob 4 PosYRef", "Bracket Cover Blob 4 WidthRef", "Bracket Cover Blob 4 HeightRef", "Bracket Cover Blob 4 PosRRef"}
+	Public BracketTape4BlobDataBaseNames = {"Bracket Tape Blob 4 PosXRef", "Bracket Tape Blob 4 PosYRef", "Bracket Tape Blob 4 WidthRef", "Bracket Tape Blob 4 HeightRef", "Bracket Tape Blob 4 PosRRef"}
+	Public BracketCover1BlobDataBaseNames = {"Bracket Cover Blob 1 PosXRef", "Bracket Cover Blob 1 PosYRef", "Bracket Cover Blob 1 WidthRef", "Bracket Cover Blob 1 HeightRef", "Bracket Cover Blob 1 PosRRef"}
+	Public BracketCover2BlobDataBaseNames = {"Bracket Cover Blob 2 PosXRef", "Bracket Cover Blob 2 PosYRef", "Bracket Cover Blob 2 WidthRef", "Bracket Cover Blob 2 HeightRef", "Bracket Cover Blob 2 PosRRef"}
+	Public BracketCover3BlobDataBaseNames = {"Bracket Cover Blob 3 PosXRef", "Bracket Cover Blob 3 PosYRef", "Bracket Cover Blob 3 WidthRef", "Bracket Cover Blob 3 HeightRef", "Bracket Cover Blob 3 PosRRef"}
+	Public BracketCover4BlobDataBaseNames = {"Bracket Cover Blob 4 PosXRef", "Bracket Cover Blob 4 PosYRef", "Bracket Cover Blob 4 WidthRef", "Bracket Cover Blob 4 HeightRef", "Bracket Cover Blob 4 PosRRef"}
 
-   'User defined types
-   Public Structure Point_
+	'User defined types
+	Public Structure Point_
 		Dim X As Single
 		Dim Y As Single
-	End Structure
-
-	Public Structure _TagNames
-		Dim Vision_Data_X As String	'[0]= "Vision_A_Data[0]"
-		Dim Vision_Data_Y As String	'[1]
-		Dim Vision_DataR As String ' [2]
-		Dim Vision_DataStatus As String	'[3]
 	End Structure
 
 	Public Structure PointData
@@ -257,11 +250,6 @@ Module mVars
 		Dim R As Double
 		Dim Height As Double
 		Dim Width As Double
-	End Structure
-
-	Public Structure _PLC_IO_Read
-		Dim Snap As Boolean
-		Dim EarlySnap As Boolean
 	End Structure
 
 	Public Structure _PLC_IO_Write_Bracket

@@ -119,7 +119,7 @@ Partial Class frmPassword
 		Me.PerformLayout()
 
 	End Sub
-    Friend WithEvents txtPassword As System.Windows.Forms.TextBox
+	Friend WithEvents txtPassword As System.Windows.Forms.TextBox
   Friend WithEvents Label1 As System.Windows.Forms.Label
   Friend WithEvents btnEnter As System.Windows.Forms.Button
   Friend WithEvents lblMessage As System.Windows.Forms.Label

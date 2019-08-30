@@ -69,10 +69,7 @@ Public Class frmMain
 	'PLC
 	Public WithEvents PLC_Bworker As New BackgroundWorker
 	'
-	'Public 'PLC_DriverCLX As New AdvancedHMIDrivers.EthernetIPforCLXCom
-	'Public PLC_DriverMod As New AdvancedHMIDrivers.ModbusRTUCom
 	Public PLC_DriverCLX As New ClxDriver.EthernetIPforCLX
-
 	'
 	Private WithEvents IOTimer As New Timer
 	Private WithEvents PLCTimer As New Timer
@@ -155,15 +152,16 @@ Public Class frmMain
 			TabControlsMain.SelectedTab = tabPageBracketLocate
 			frmSplash.lblStatus.Text = "Snapping Images"
 			Application.DoEvents()
+			'TODO
 			'Snap some pictures
-			Snap(Camera.LocateGlass)
-			Snap(Camera.BracketAtConveyor)
-			Snap(Camera.BracketTape)
-			Snap(Camera.BracketVerify)
-			Snap(Camera.BracketPrimer)
-			Snap(Camera.Driver)
-			Snap(Camera.Center)
-			Snap(Camera.Passenger)
+			'Snap(Camera.LocateGlass)
+			'Snap(Camera.BracketAtConveyor)
+			'Snap(Camera.BracketTape)
+			'Snap(Camera.BracketVerify)
+			'Snap(Camera.BracketPrimer)
+			'Snap(Camera.Driver)
+			'Snap(Camera.Center)
+			'Snap(Camera.Passenger)
 			'Start the timer to poll the PLC
 			TabControlsMain.TabPages.Remove(tabPagePosition)
 			'''''''''''''''''''''''''''''''''''''''
@@ -216,17 +214,17 @@ Public Class frmMain
 			Case tabpageBracketPrimerVerify.Name
 				TabControlsMain.Size = New Point(1554, 958)
 				CurrentVisionTab = Camera.BracketPrimer
-			Case tabPageGocator.Name
-				TabControlsMain.Size = New Point(1554, 958)
-				CurrentVisionTab = Camera.GoCator
-				Try
-					Dim myProcess As New System.Diagnostics.Process()
-					myProcess.StartInfo = New System.Diagnostics.ProcessStartInfo("iexplore", "http://192.168.1.10")
-					myProcess.Start()
-				Catch ex As Exception
-					ShowVBErrors("Starting Gocator-", ex.Message)
-				End Try
-				TabControlsMain.SelectedTab = tabPageBracketLocate
+			'Case tabPageGocator.Name
+			'	TabControlsMain.Size = New Point(1554, 958)
+			'	CurrentVisionTab = Camera.GoCator
+			'	Try
+			'		Dim myProcess As New System.Diagnostics.Process()
+			'		myProcess.StartInfo = New System.Diagnostics.ProcessStartInfo("iexplore", "http://192.168.1.10")
+			'		myProcess.Start()
+			'	Catch ex As Exception
+			'		ShowVBErrors("Starting Gocator-", ex.Message)
+			'	End Try
+			'	TabControlsMain.SelectedTab = tabPageBracketLocate
 			Case tabPageBracketLocate.Name
 				TabControlsMain.Size = New Point(1554, 958)
 				CurrentVisionTab = Camera.LocateGlass
@@ -494,12 +492,12 @@ Public Class frmMain
 			updnLocationR.Enabled = Password.General
 			btnLocationAdjOK.Enabled = Password.General
 			btnLocationAdjCancel.Enabled = Password.General
-			'
-			'Gocator
-			TabControlsMain.TabPages.Remove(tabPageGocator)
-			If Password.Gocator Then
-				TabControlsMain.TabPages.Add(tabPageGocator)
-			End If
+			''
+			''Gocator
+			'TabControlsMain.TabPages.Remove(tabPageGocator)
+			'If Password.Gocator Then
+			'	TabControlsMain.TabPages.Add(tabPageGocator)
+			'End If
 		Catch ex As Exception
 			ShowVBErrors("ActivatePassword", ex.Message)
 		End Try
@@ -593,7 +591,7 @@ Public Class frmMain
 							frmSplash.lblStatus.Text = "Bracket Camera Initialized"
 						Else
 							InitFail = True
-							MsgBox("Could Not Initialize the Bracket Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
+							'TODO MsgBox("Could Not Initialize the Bracket Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
 						End If
 					Case 2
 						Application.DoEvents()
@@ -604,7 +602,7 @@ Public Class frmMain
 							frmSplash.lblStatus.Text = "Driver Camera Initialized"
 						Else
 							InitFail = True
-							MsgBox("Could Not Initialize the Driver Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
+							'TODO MsgBox("Could Not Initialize the Driver Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
 						End If
 					Case 3
 						Application.DoEvents()
@@ -615,7 +613,7 @@ Public Class frmMain
 							frmSplash.lblStatus.Text = "Center Camera Initialized"
 						Else
 							InitFail = True
-							MsgBox("Could Not Initialize the Center Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
+							'TODO MsgBox("Could Not Initialize the Center Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
 						End If
 					Case 4
 						Application.DoEvents()
@@ -626,7 +624,7 @@ Public Class frmMain
 							frmSplash.lblStatus.Text = "Passenger Camera Initialized"
 						Else
 							InitFail = True
-							MsgBox("Could Not Initialize the Passenger Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
+							'TODO MsgBox("Could Not Initialize the Passenger Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
 						End If
 					Case 5
 						Application.DoEvents()
@@ -637,7 +635,7 @@ Public Class frmMain
 							frmSplash.lblStatus.Text = "Primer/Tape  Camera Initialized"
 						Else
 							InitFail = True
-							MsgBox("Could Not Initialize the Primer/Tape Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
+							'TODO MsgBox("Could Not Initialize the Primer/Tape Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
 						End If
 					Case Else
 						Return False
@@ -717,7 +715,7 @@ Public Class frmMain
 
 		Try
 			Temperature = helper.GetSimpleFeature("Temperature")
-			Temperature = Temperature / 16
+			Temperature /= 16
 			Temperature = ((9 / 5) * Temperature) + 32
 			tempLabel.Text = Temperature.ToString("N1") & " " & "°F"
 			If Temperature < 110 Then
@@ -2506,7 +2504,7 @@ Public Class frmMain
 							Dim Count As Integer = 0
 							Dim TotalArea As Single = 0
 							For Count = 0 To BlobCount - 1
-								TotalArea = TotalArea + HSBlob.BlobArea(Count)
+								TotalArea += HSBlob.BlobArea(Count)
 							Next Count
 							lblCenterCurrentBlobArea.Text = TotalArea
 							'Display the Blobs
@@ -2895,8 +2893,6 @@ Public Class frmMain
 
 	Private Sub LightControls(sender As Object, e As EventArgs) Handles btnBacklight.Click, btnOverheadLight.Click, btnBacklightPrimer.Click
 		Dim btn As Button
-		Dim TODO As Boolean
-
 		btn = DirectCast(sender, Button)
 		Select Case btn.Name
 			Case btnBacklight.Name
@@ -3749,18 +3745,18 @@ Public Class frmMain
 			'set the camera setting
 			SetCameraSettings()
 			'send the data to the plc
-			'PLC_DriverCLX.Write("vis_pc_recipe_name", PartName)
-			'PLC_DriverCLX.Write("vis_pc_Bracket_Type", PartSettingsBracketName)
-			'PLC_DriverCLX.Write("vis_pc_Robot_Prog", PartSettingsRobotID)
+			PLC_DriverCLX.Write("vis_pc_recipe_name", PartName)
+			PLC_DriverCLX.Write("vis_pc_Bracket_Type", PartSettingsBracketName)
+			PLC_DriverCLX.Write("vis_pc_Robot_Prog", PartSettingsRobotID)
 			If PartUseBracket Then
-				'PLC_DriverCLX.Write("Vis_PC_Inspections.1", CInt(PartUseBracket) * -1)
+				PLC_DriverCLX.Write("Vis_PC_Inspections.1", CInt(PartUseBracket) * -1)
 			Else
-				'PLC_DriverCLX.Write("Vis_PC_Inspections.1", CInt(PartUseBracket))
+				PLC_DriverCLX.Write("Vis_PC_Inspections.1", CInt(PartUseBracket))
 			End If
 			If PartPrimer Then
-				'PLC_DriverCLX.Write("Vis_PC_Inspections.0", CInt(PartPrimer) * -1)
+				PLC_DriverCLX.Write("Vis_PC_Inspections.0", CInt(PartPrimer) * -1)
 			Else
-				'PLC_DriverCLX.Write("Vis_PC_Inspections.0", CInt(PartPrimer))
+				PLC_DriverCLX.Write("Vis_PC_Inspections.0", CInt(PartPrimer))
 			End If
 			LoadPart = True
 			ChangingPart = False
@@ -4255,9 +4251,9 @@ Public Class frmMain
 			OffsetY = RectY - OriginalRectY
 			OffsetR = RectR - OriginalRectR
 			'Add the shifted amount to the Hexsight Blob Location to train the master tool
-			HSBlob.ToolPositionX = HSBlob.ToolPositionX + OffsetX
-			HSBlob.ToolPositionY = HSBlob.ToolPositionY + OffsetY
-			HSBlob.ToolRotation = HSBlob.ToolRotation + OffsetR
+			HSBlob.ToolPositionX += OffsetX
+			HSBlob.ToolPositionY += OffsetY
+			HSBlob.ToolRotation += OffsetR
 			HSBlob.ToolWidth = RectWidth
 			HSBlob.ToolHeight = RectHeight
 			'Change color of the rectangle and make it unmovable
@@ -4415,9 +4411,9 @@ Public Class frmMain
 		Try
 			Side = Camera.LocateGlass
 			HSModel = HSLoc(Side).ShowModelEditor(False, CamLocation(Side))
-			HSModel.OriginPositionX = HSModel.OriginPositionX + updnLocationX.Value
-			HSModel.OriginPositionY = HSModel.OriginPositionY + updnLocationY.Value
-			HSModel.OriginRotation = HSModel.OriginRotation + updnLocationR.Value
+			HSModel.OriginPositionX += updnLocationX.Value
+			HSModel.OriginPositionY += updnLocationY.Value
+			HSModel.OriginRotation += updnLocationR.Value
 			HSModel.Apply()
 			HSLoc(Side).SaveModelDatabase(CurrentFilePath & CamLocation(Side) & ".hdb")
 			HSLoc(Side).HideModelEditor()
@@ -4483,6 +4479,10 @@ Public Class frmMain
 		End If
 	End Sub
 
+	Private Sub LblBracketInspectionConveyor_Click(sender As Object, e As EventArgs) Handles lblBracketInspectionConveyor.Click
+
+	End Sub
+
 #End Region
 
 #Region "PLC"
@@ -4545,7 +4545,7 @@ Public Class frmMain
 			Control.CheckForIllegalCrossThreadCalls = False
 			'PLC Ip Address
 			PLCIPAddress = frmDataBase.GetValue("Settings", "Value", "PLC_Address")
-			'PLC_DriverCLX.IPAddress = PLCIPAddress
+			PLC_DriverCLX.IPAddress = PLCIPAddress
 			PLC_Start()
 		Catch ex As Exception
 			ShowVBErrors("PLC_Init ", ex.Message)
@@ -4564,9 +4564,8 @@ Public Class frmMain
 
 	Public Function PLC_HeartBeat() As Boolean
 		Try
-			Dim TODO As Boolean
-			Dim HB As Boolean = TODO 'PLC_DriverCLX.Read(PLC_Tags.plcTag_Heartbeat)
-			'PLC_DriverCLX.Write(PLC_Tags.plcTag_Heartbeat, CInt(Not HB))
+			Dim HB As Boolean = PLC_DriverCLX.Read(PLC_Tags.plcTag_Heartbeat)
+			PLC_DriverCLX.Write(PLC_Tags.plcTag_Heartbeat, CInt(Not HB))
 			lblHeartBeat.ForeColor = Color.Black
 			lblHeartBeat.Text = "Heartbeat " & HB
 			Return True
@@ -4599,11 +4598,10 @@ Public Class frmMain
 	End Sub
 
 	Private Sub ClearPLCCountData()
-		'Dim PLC_ReadAry() As String
 		Try
-			'PLC_DriverCLX.Write("HMI_Shift_Reset", 0)
+			PLC_DriverCLX.Write("HMI_Shift_Reset", 0)
 			DelayTimer(250)
-			'PLC_DriverCLX.Write("HMI_Shift_Reset", 1)
+			PLC_DriverCLX.Write("HMI_Shift_Reset", 1)
 			Application.DoEvents()
 		Catch ex As Exception
 			ShowVBErrors("ClearPLCCountData", ex.Message)
@@ -4953,16 +4951,16 @@ Public Class frmMain
 			'
 			Success = Locate(Camera.BracketAtConveyor, True, False)
 			If Success Then
-				''PLC_DriverCLX.Write((PLC_Tags.plcTag_BracketConveyorLocationX), PLC_IO_Write_Bracket(1).Vision_Data_X)
-				'PLC_DriverCLX.Write((PLC_Tags.plcTag_BracketConveyorLocationY), PLC_IO_Write_Bracket(1).Vision_Data_Y)
-				'PLC_DriverCLX.Write((PLC_Tags.plcTag_BracketConveyorLocationR), PLC_IO_Write_Bracket(1).Vision_Data_R)
-				'PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketConveyorLocationDone, 1)
-				'PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketConveyorLocationStat, PLC_IO_Write_Bracket(1).VisStat)
+				PLC_DriverCLX.Write((PLC_Tags.plcTag_BracketConveyorLocationX), PLC_IO_Write_Bracket(1).Vision_Data_X)
+				PLC_DriverCLX.Write((PLC_Tags.plcTag_BracketConveyorLocationY), PLC_IO_Write_Bracket(1).Vision_Data_Y)
+				PLC_DriverCLX.Write((PLC_Tags.plcTag_BracketConveyorLocationR), PLC_IO_Write_Bracket(1).Vision_Data_R)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketConveyorLocationDone, 1)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketConveyorLocationStat, PLC_IO_Write_Bracket(1).VisStat)
 				lblmessagedesc.Text = "Bracket Conveyor Locator Passed"
 			Else
-				'PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketConveyorLocationStat, PLC_IO_Write_Bracket(1).VisStat)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketConveyorLocationStat, PLC_IO_Write_Bracket(1).VisStat)
 				lblmessagedesc.Text = "Bracket Conveyor Locator Failed"
-				'PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketConveyorLocationDone, 1)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketConveyorLocationDone, 1)
 			End If
 			INRoutines = False
 		Catch ex As Exception

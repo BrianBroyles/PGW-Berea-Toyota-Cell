@@ -5,9 +5,8 @@
         If  Fail Then
             lblMessageDesc.Text = "Unable to communicate with:"
             lblErrorMessage.Text = ""
-            Me.Hide()
-
-        End If
+			Me.Hide()
+		End If
 
     End Sub
 End Class
