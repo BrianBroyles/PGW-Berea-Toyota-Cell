@@ -2066,7 +2066,7 @@ Public Class frmMain
 							lblVisionPoseRBracket.Text = LocatorResults(Side).Angle.ToString("N2")
 							lblVisionPoseScoreBracket.Text = LocatorResults(Side).Score.ToString("N2")
 							lblVisionPoseFitBracket.Text = LocatorResults(Side).Fit.ToString("N2")
-							CheckThresholds(Side)
+							UpdateLabelsAndStatus(Side)
 							''
 							PLC_IO_Write_Bracket(0).Vision_Data_X = LocatorResults(Side).Point.X * 10
 							PLC_IO_Write_Bracket(0).Vision_Data_Y = LocatorResults(Side).Point.Y * 10
@@ -2099,7 +2099,7 @@ Public Class frmMain
 							RefVerify1.X = HSLoc(Side).InstanceReferencePointPositionX(0, 1)
 							RefVerify2.X = HSLoc(Side).InstanceReferencePointPositionX(0, 2)
 							RefVerify2.Y = HSLoc(Side).InstanceReferencePointPositionY(0, 2)
-							CheckThresholds(Side)
+							UpdateLabelsAndStatus(Side)
 							DrawPointMarkers(Side)
 							HSDisplayLocateGlass.RefreshMarkers()
 						Case Camera.Driver
@@ -2109,7 +2109,7 @@ Public Class frmMain
 							lblVisionPoseRDriver.Text = LocatorResults(Side).Angle.ToString("N2")
 							lblVisionPoseScoreDriver.Text = LocatorResults(Side).Score.ToString("N2")
 							lblVisionPoseFitDriver.Text = LocatorResults(Side).Fit.ToString("N2")
-							CheckThresholds(Side)
+							UpdateLabelsAndStatus(Side)
 							DrawPointMarkers(Side)
 							HSDisplayDriver.RefreshMarkers()
 						Case Camera.Center
@@ -2119,7 +2119,7 @@ Public Class frmMain
 							lblVisionPoseRCenter.Text = LocatorResults(Side).Angle.ToString("N2")
 							lblVisionPoseScoreCenter.Text = LocatorResults(Side).Score.ToString("N2")
 							lblVisionPoseFitCenter.Text = LocatorResults(Side).Fit.ToString("N2")
-							CheckThresholds(Side)
+							UpdateLabelsAndStatus(Side)
 							DrawPointMarkers(Side)
 							HSDisplayCenter.RefreshMarkers()
 						Case Camera.Passenger
@@ -2129,7 +2129,7 @@ Public Class frmMain
 							lblVisionPoseRPassenger.Text = LocatorResults(Side).Angle.ToString("N2")
 							lblVisionPoseScorePassenger.Text = LocatorResults(Side).Score.ToString("N2")
 							lblVisionPoseFitPassenger.Text = LocatorResults(Side).Fit.ToString("N2")
-							CheckThresholds(Side)
+							UpdateLabelsAndStatus(Side)
 							DrawPointMarkers(Side)
 							HSDisplayPassenger.RefreshMarkers()
 						Case Camera.BracketAtDialTable
@@ -2139,7 +2139,7 @@ Public Class frmMain
 							lblVisionPoseRBracketConveyor.Text = LocatorResults(Side).Angle.ToString("N2")
 							lblVisionPoseScoreBracketConveyor.Text = LocatorResults(Side).Score.ToString("N2")
 							lblVisionPoseFitBracketConveyor.Text = LocatorResults(Side).Fit.ToString("N2")
-							CheckThresholds(Side)
+							UpdateLabelsAndStatus(Side)
 							PLC_IO_Write_Bracket(1).Vision_Data_X = LocatorResults(Side).Point.X * 10
 							PLC_IO_Write_Bracket(1).Vision_Data_Y = LocatorResults(Side).Point.Y * 10
 							PLC_IO_Write_Bracket(1).Vision_Data_R = LocatorResults(Side).Angle * 100
@@ -2280,7 +2280,7 @@ Public Class frmMain
 		GC.Collect()
 	End Sub
 
-	Private Sub CheckThresholds(ByRef Side As Integer)
+	Private Sub UpdateLabelsAndStatus(ByRef Side As Integer)
 		Try
 			'Check Score
 			LocatorResults(Side).Status = 0
