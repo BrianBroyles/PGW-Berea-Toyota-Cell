@@ -255,9 +255,7 @@ Module mVars
 		Passenger = 3
 		BracketAtDialTable = 4
 		GoCator = 5
-		BracketTape = 6
 		BracketVerify = 7
-		BracketPrimer = 8
 	End Enum
 
 

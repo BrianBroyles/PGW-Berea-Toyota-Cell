@@ -15,9 +15,6 @@ Public Class frmMain
 	Public CurrentFilePath As String 'PartsPath + PartName
 	Public VisionDatabasePath As String = Application.StartupPath + "\..\..\Config Data\Vision.cfg" 'App.Path + "\..\Config Data\Vision.cfg"
 	Public CalibrationPath As String = Application.StartupPath + "\..\..\Config Data\"
-	Public GoVisionDatabasePath As String = Application.StartupPath + "\..\..\Config Data\Gocator.cfg" 'App.Path + "\..\Config Data\Vision.cfg"
-	Private CalibratePath As String = ConfigPath + "Calibration.cal"
-	Private NewPickup As PointData
 	Public UpdatingPartData As Boolean = False
 	Private Calibrating As Boolean
 	Public Loading As Boolean
@@ -211,9 +208,6 @@ Public Class frmMain
 		Dim Tab As New TabControl
 		Tab = DirectCast(sender, TabControl)
 		Select Case Tab.SelectedTab.Name
-			Case tabpageBracketPrimerVerify.Name
-				TabControlsMain.Size = New Point(1554, 958)
-				CurrentVisionTab = Camera.BracketPrimer
 			'Case tabPageGocator.Name
 			'	TabControlsMain.Size = New Point(1554, 958)
 			'	CurrentVisionTab = Camera.GoCator
@@ -681,10 +675,6 @@ Public Class frmMain
 					ImagePassenger.Load(ConfigPath & "NoImage.bmp")
 				Case Camera.BracketVerify
 					ImagePassenger.Load(ConfigPath & "NoImage.bmp")
-				Case Camera.BracketPrimer
-					ImageBracketPrimer.Load(ConfigPath & "NoImage.bmp")
-				Case Camera.BracketTape
-					ImagePassenger.Load(ConfigPath & "NoImage.bmp")
 			End Select
 		Catch ex As Exception
 			ShowVBErrors("AcquisitionError", ex.Message)
@@ -739,9 +729,6 @@ Public Class frmMain
 				Case btnTrainNewBracketconveyor.Name
 					TextString = "Bracket At Conveyor model"
 					Side = Camera.BracketAtDialTable
-				Case btnTrainNewBracketTape.Name
-					Side = Camera.BracketTape
-					TextString = "Bracket Tape Inspection model"
 				Case btnTrainNewCenter.Name
 					TextString = "Center glass model"
 					Side = Camera.Center
@@ -757,9 +744,6 @@ Public Class frmMain
 					TextString = "Passenger glass model"
 					Side = Camera.Passenger
 					'passenger
-				Case btnTrainNewBracketPrimer.Name
-					TextString = "Bracket Primer Verify"
-					Side = Camera.BracketPrimer
 			End Select
 
 			Snap(Side)
@@ -834,21 +818,14 @@ Public Class frmMain
 					Side = Camera.LocateGlass
 				Case btnTrainExistingBracketConveyor.Name
 					Side = Camera.BracketAtDialTable
-				Case btnTrainExistingBracketTape.Name
-					Side = Camera.BracketTape
 				Case btnTrainExistingCenter.Name
 					Side = Camera.Center
-					'center
 				Case btnTrainExistingCenterVerify.Name
 					Side = Camera.BracketVerify
 				Case btnTrainExistingDriver.Name
 					Side = Camera.Driver
-					'drive
 				Case btnTrainExistingPassenger.Name
 					Side = Camera.Passenger
-					'passenger
-				Case btnTrainExistingBracketPrimer.Name
-					Side = Camera.BracketPrimer
 			End Select
 			HSModel = HSLoc(Side).ShowModelEditor(False, CamLocation(Side))
 			With HSModel
@@ -1129,51 +1106,7 @@ Public Class frmMain
 															ex.Message, MsgBoxStyle.Critical + MsgBoxStyle.SystemModal)
 				End Try
 
-			Case Camera.BracketPrimer
-				Try
-					HSModel = HSLoc(Camera.BracketPrimer).ShowModelEditor(False, "Bracket Primer Locate")
-					With HSModel
-						Try
-							.ReferencePointPositionX(0) = 0
-							.ReferencePointPositionY(0) = 0
-						Catch
-						End Try
-					End With
-					HSModel.Apply()
-					HSModel.EndDialog(HSLOCATORLib.hsModelDialogResult.hsResultOK)
-					'Save Model Database
-					HSLoc(Camera.BracketPrimer).SaveModelDatabase(ConfigPath & "Bracket Primer Locate.hdb")
-					HSLoc(Camera.BracketPrimer).CompactMemory()
-					'
-				Catch ex As Exception
-					MsgBox("Problem modifying the model file reference point" & vbCr &
-															"You may need need to modify the model" & vbCr &
-															"through the Hexsight Interface" & vbCr &
-															ex.Message, MsgBoxStyle.Critical + MsgBoxStyle.SystemModal)
-				End Try
 
-			Case Camera.BracketTape
-				Try
-					HSModel = HSLoc(Camera.BracketTape).ShowModelEditor(False, "Bracket Tape Locate")
-					With HSModel
-						Try
-							.ReferencePointPositionX(0) = 0
-							.ReferencePointPositionY(0) = 0
-						Catch
-						End Try
-					End With
-					HSModel.Apply()
-					HSModel.EndDialog(HSLOCATORLib.hsModelDialogResult.hsResultOK)
-					'Save Model Database
-					HSLoc(Camera.BracketTape).SaveModelDatabase(ConfigPath & "Bracket Tape Locate.hdb")
-					HSLoc(Camera.BracketTape).CompactMemory()
-					'
-				Catch ex As Exception
-					MsgBox("Problem modifying the model file reference point" & vbCr &
-															"You may need need to modify the model" & vbCr &
-															"through the Hexsight Interface" & vbCr &
-															ex.Message, MsgBoxStyle.Critical + MsgBoxStyle.SystemModal)
-				End Try
 		End Select
 	End Sub
 
@@ -1193,13 +1126,6 @@ Public Class frmMain
 						Description = Description & HSLoc(Camera.BracketAtDialTable).MessageDescription(MessageID) & vbCr
 					Next MessageID
 					MsgBox(Description, MsgBoxStyle.OkOnly Or MsgBoxStyle.SystemModal)
-				Case Camera.BracketTape
-					If rdoTapeBottomLeft.Checked Then
-						For MessageID = 0 To HSLoc(Camera.BracketTape).MessageCount - 1
-							Description = Description & HSLoc(Camera.BracketTape).MessageDescription(MessageID) & vbCr
-						Next MessageID
-						MsgBox(Description, MsgBoxStyle.OkOnly Or MsgBoxStyle.SystemModal)
-					End If
 				Case Camera.Driver
 					For MessageID = 0 To HSLoc(Camera.Driver).MessageCount - 1
 						Description = Description & HSLoc(Camera.Driver).MessageDescription(MessageID) & vbCr
@@ -1236,8 +1162,6 @@ Public Class frmMain
 				HSLoc(Camera.LocateGlass).ShowProperties(True, , 1 + 4 + 8 + 16)
 			Case btnSearchSettingsBracketConveyor.Name
 				HSLoc(Camera.BracketAtDialTable).ShowProperties(True, , 1 + 4 + 8 + 16)
-			Case btnSearchSettingsBracketTape.Name
-				HSLoc(Camera.BracketTape).ShowProperties(True, , 1 + 4 + 8 + 16)
 			Case btnSearchSettingsCenter.Name
 				HSLoc(Camera.Center).ShowProperties(True, , 1 + 4 + 8 + 16)
 			Case btnSearchSettingsCenterVerify.Name
@@ -1246,8 +1170,6 @@ Public Class frmMain
 				HSLoc(Camera.Driver).ShowProperties(True, , 1 + 4 + 8 + 16)
 			Case btnSearchSettingsPassenger.Name
 				HSLoc(Camera.Passenger).ShowProperties(True, , 1 + 4 + 8 + 16)
-			Case btnSearchSettingsBracketPrimer.Name
-				HSLoc(Camera.BracketPrimer).ShowProperties(True, , 1 + 4 + 8 + 16)
 		End Select
 		Try
 			SaveHexsight()
@@ -1293,9 +1215,7 @@ Public Class frmMain
 			CamLocation(Camera.Center) = "Center Locate"
 			CamLocation(Camera.Passenger) = "Passenger Locate"
 			CamLocation(Camera.BracketAtDialTable) = "Bracket Conveyor Locate"
-			CamLocation(Camera.BracketTape) = "Bracket Tape Locate"
 			CamLocation(Camera.BracketVerify) = "Bracket Verify"
-			CamLocation(Camera.BracketPrimer) = "Bracket Primer Locate"
 
 			'
 			ConfigName(Camera.LocateGlass) = "Locate Glass Config"
@@ -1303,10 +1223,7 @@ Public Class frmMain
 			ConfigName(Camera.Center) = "Center Side Blob Config"
 			ConfigName(Camera.Passenger) = "Passenger Side Blob Config"
 			ConfigName(Camera.BracketAtDialTable) = "Bracket Conveyor Locate"
-			ConfigName(Camera.BracketTape) = "Bracket Conveyor Tape Inspection"
-
 			ConfigName(Camera.BracketVerify) = "Center Bracket Verification"
-			ConfigName(Camera.BracketPrimer) = "Bracket Primer Verification"
 			'
 			'Assign Controls
 			HSAcq = HSApp.ProcessManager.Process("Acquisition")
@@ -1464,8 +1381,6 @@ Public Class frmMain
 					Yes = MsgBox("Do you wish to save this calibration to disk?", MsgBoxStyle.YesNo)
 					If Yes = MsgBoxResult.Yes Then
 						HSAcq.SaveCalibration(ConfigName(Camera.BracketAtDialTable), CalibrationPath & "Bracket.Cal")
-						HSAcq.LoadCalibration(ConfigName(Camera.BracketTape), CalibrationPath & "Bracket.cal") 'load into second display
-						HSAcq.LoadCalibration(ConfigName(Camera.BracketPrimer), CalibrationPath & "Bracket.cal") 'load into second display
 						SaveHexsight()
 						MsgBox("Database Updated", MsgBoxStyle.SystemModal)
 					Else
@@ -1576,15 +1491,6 @@ Public Class frmMain
 						Locate(Camera.BracketAtDialTable, True)
 						If chkLocateBracketConveyor.Checked Then DelayTimer(1000)
 					Loop While chkLocateBracketConveyor.Checked
-				Case btnLocateBracketTape.Name
-					Do
-						lblTapeAreaTopLeft.Text = ""
-						lblTapeAreaTopRight.Text = ""
-						lblTapeAreaBottomLeft.Text = ""
-						lblTapeAreaBottomRight.Text = ""
-						Locate(Camera.BracketTape, True, True)
-						If chkLocateBracketTape.Checked Then DelayTimer(1000)
-					Loop While chkLocateBracketTape.Checked
 				Case btnLocateBracketVerify.Name
 					Do
 						Locate(Camera.BracketVerify, True)
@@ -1620,8 +1526,6 @@ Public Class frmMain
 						Locate(Camera.BracketVerify, False)
 						If chkLocateGlassVerify.Checked Then DelayTimer(1000)
 					Loop While chkLocateGlassVerify.Checked
-				Case btnLocateOnlyBracketPrimer.Name
-					Locate(Camera.BracketPrimer, False)
 			End Select
 		Catch ex As Exception
 			ShowVBErrors("btnLocate", ex.Message)
@@ -1687,7 +1591,7 @@ Public Class frmMain
 					Find(Side)
 					If CheckBlob Then '
 						CenterBlobArea = Blob(Camera.Center, "Center Blob", "Center Locate")
-						DisplayBlobRegions("Center Blob")
+						DrawBlobRectangles("Center Blob")
 						If CenterBlobArea > 0 Then
 							' CenterBlobVariance = SavedCenterBlobArea * (0.01 * trkCenterBlob.Value)
 							If (CenterBlobArea > CenterBlobVariance) Then
@@ -1715,7 +1619,7 @@ Public Class frmMain
 					Find(Side)
 					If CheckBlob Then
 						PassengerBlobArea = Blob(Camera.Passenger, "Passenger Blob", "Passenger Locate")
-						DisplayBlobRegions("Passenger Blob")
+						DrawBlobRectangles("Passenger Blob")
 						If PassengerBlobArea > 0 Then
 							' PassengerBlobVariance = SavedPassengerBlobArea * (0.01 * trkPassengerBlob.Value)
 							If (PassengerBlobArea >= (PassengerBlobVariance)) Then
@@ -1910,15 +1814,6 @@ Public Class frmMain
 					HSDisplayBracketConveyor.RefreshDisplay()
 					btnSnapBracketConveyor.Enabled = True
 					lblCameraTimeBracketConveyor.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
-				Case Camera.BracketTape
-					Display = HSDisplayBracketTape
-					' Display.RefreshDisplay()
-					btnSnapBracketTape.Enabled = False
-					'Snap the picture, try 2nd time if unsuccessful
-					If Not GetCameraImage(Side) Then GetCameraImage(Side)
-					HSDisplayBracketTape.RefreshDisplay()
-					btnSnapBracketTape.Enabled = True
-					lblCameraTimeBracketTape.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
 				Case Camera.BracketVerify
 					Display = HSDisplayCenterBracketVerify
 					Display.RefreshDisplay()
@@ -1994,122 +1889,6 @@ Public Class frmMain
 			HSBlob = HSApp.ProcessManager.Process(BlobName)
 			'Set the upper and lower threshold limits for each blob
 			Select Case Side
-				Case Camera.BracketTape
-					Select Case BlobNum
-						Case 1
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomLeft) = updnTapeBlobMinTopLeft.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopLeft) = updnTapeBlobMinTopLeft.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomRight) = updnTapeBlobMaxTopLeft.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopRight) = updnTapeBlobMaxTopLeft.Value
-							HSBlob.Execute()
-							DisplayBlobRegions(BlobName)
-							Try
-								lblTapeAreaTopLeft.Text = HSBlob.BlobArea(0).ToString("N0")
-							Catch
-								lblTapeAreaTopLeft.Text = "0"
-							End Try
-						Case 2
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomLeft) = updnTapeBlobMinTopRight.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopLeft) = updnTapeBlobMinTopRight.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomRight) = updnTapeBlobMaxTopRight.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopRight) = updnTapeBlobMaxTopRight.Value
-							HSBlob.Execute()
-							DisplayBlobRegions(BlobName)
-							Try
-								lblTapeAreaTopRight.Text = HSBlob.BlobArea(0).ToString("N0")
-							Catch
-								lblTapeAreaTopRight.Text = "0"
-							End Try
-						Case 3
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomLeft) = updnTapeBlobMinBottomLeft.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopLeft) = updnTapeBlobMinBottomLeft.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomRight) = updnTapeBlobMaxBottomLeft.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopRight) = updnTapeBlobMaxBottomLeft.Value
-							HSBlob.Execute()
-							DisplayBlobRegions(BlobName)
-							Try
-								lblTapeAreaBottomLeft.Text = HSBlob.BlobArea(0).ToString("N0")
-							Catch
-								lblTapeAreaBottomLeft.Text = "0"
-							End Try
-						Case 4
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomLeft) = updnTapeBlobMinBottomRight.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopLeft) = updnTapeBlobMinBottomRight.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomRight) = updnTapeBlobMaxBottomRight.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopRight) = updnTapeBlobMaxBottomRight.Value
-							HSBlob.Execute()
-							DisplayBlobRegions(BlobName)
-							Try
-								lblTapeAreaBottomRight.Text = HSBlob.BlobArea(0).ToString("N0")
-							Catch
-								lblTapeAreaBottomRight.Text = "0"
-							End Try
-						Case 5
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomLeft) = updnCoverBlobMinTopLeft.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopLeft) = updnCoverBlobMinTopLeft.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomRight) = 255
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopRight) = 255
-							HSBlob.Execute()
-							DisplayBlobRegions(BlobName)
-							Try
-								lblCoverAreaTopLeft.Text = HSBlob.BlobArea(0).ToString("N0")
-							Catch
-								lblCoverAreaTopLeft.Text = "0"
-							End Try
-						Case 6
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomLeft) = updnCoverBlobMinTopRight.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopLeft) = updnCoverBlobMinTopRight.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomRight) = 255
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopRight) = 255
-							HSBlob.Execute()
-							DisplayBlobRegions(BlobName)
-							Try
-								lblCoverAreaTopRight.Text = HSBlob.BlobArea(0).ToString("N0")
-							Catch
-								lblCoverAreaTopRight.Text = "0"
-							End Try
-						Case 7
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomLeft) = updnCoverBlobMinBottomLeft.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopLeft) = updnCoverBlobMinBottomLeft.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomRight) = 255
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopRight) = 255
-							HSBlob.Execute()
-							DisplayBlobRegions(BlobName)
-							Try
-								lblCoverAreaBottomLeft.Text = HSBlob.BlobArea(0).ToString("N0")
-							Catch
-								lblCoverAreaBottomLeft.Text = "0"
-							End Try
-						Case 8
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomLeft) = updnCoverBlobMinBottomRight.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopLeft) = updnCoverBlobMinBottomRight.Value
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomRight) = 255
-							HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopRight) = 255
-							HSBlob.Execute()
-							DisplayBlobRegions(BlobName)
-							Try
-								lblCoverAreaBottomRight.Text = HSBlob.BlobArea(0).ToString("N0")
-							Catch
-								lblCoverAreaBottomRight.Text = "0"
-							End Try
-					End Select
-					Try
-						CurrentTapeArea(BlobNum) = HSBlob.BlobArea(0)
-					Catch
-						CurrentTapeArea(BlobNum) = 0
-					End Try
-					Try
-						If HSBlob.BlobArea(0) = vbNullString Then
-							btnLocateBracketTape.Enabled = True
-							Return 0
-							Exit Function
-						End If
-					Catch ex As Exception
-						lblVisionMessageDriver.Text = "No Primer was Found"
-						btnLocateBracketTape.Enabled = True
-						lblVisionMessageDriver.BackColor = Color.Red
-						Return 0
-					End Try
 				Case Camera.Driver
 					HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomLeft) = updnDriverBlobThresholdMin.Value
 					HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopLeft) = updnDriverBlobThresholdMin.Value
@@ -2117,7 +1896,7 @@ Public Class frmMain
 					HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopRight) = updnDriverBlobThresholdMax.Value
 					lblDriverCurrentBlobArea.Text = "0"
 					HSBlob.Execute()
-					DisplayBlobRegions(BlobName)
+					DrawBlobRectangles(BlobName)
 					Try
 						If HSBlob.BlobArea(0) = vbNullString Then
 							Return 0
@@ -2135,7 +1914,7 @@ Public Class frmMain
 					HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopRight) = updnCenterBlobThresholdMax.Value
 					lblCenterCurrentBlobArea.Text = "0"
 					HSBlob.Execute()
-					DisplayBlobRegions(BlobName)
+					DrawBlobRectangles(BlobName)
 					Try
 						If HSBlob.BlobArea(0) = vbNullString Then
 							Return 0
@@ -2153,7 +1932,7 @@ Public Class frmMain
 					HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopRight) = updnPassengerBlobThresholdMax.Value
 					lblPassengerCurrentBlobArea.Text = "0"
 					HSBlob.Execute()
-					DisplayBlobRegions(BlobName)
+					DrawBlobRectangles(BlobName)
 					Try
 						If HSBlob.BlobArea(0) = vbNullString Then
 							Return 0
@@ -2170,16 +1949,6 @@ Public Class frmMain
 			If HSBlob.BlobCount > 0 Then
 				For i As Int16 = 0 To HSBlob.BlobCount - 1
 					Select Case Side
-						Case Camera.BracketTape
-							With HSDisplayBracketTape
-								.set_ImagePalette(BlobNum, HSDISPLAYLib.hsImagePalette.hsPaletteNone)
-								.set_ImagePaletteType(0, HSDISPLAYLib.hsImagePaletteType.hsPaletteTypeColor1)
-								.set_ImagePaletteColor(0, 0, RGB(255, 128, 0))
-								.set_ImagePalette(BlobNum, HSDISPLAYLib.hsImagePalette.hsPalette0)
-								.set_ImageDatabase(BlobNum, HSApp.Database.Handle)
-								.set_ImageViewName(BlobNum, HSBlob.OutputBlobView)
-								.set_ImageName(BlobNum, HSBlob.OutputBlobImage)
-							End With
 						Case Camera.Driver
 							lblDriverCurrentBlobArea.Text = HSBlob.BlobArea(0)
 							With HSDisplayDriver
@@ -2279,26 +2048,6 @@ Public Class frmMain
 						HSDisplayBracketConveyor.set_ScenePenWidth(0, HSDISPLAYLib.hsPenWidth.hsPenWidthThin)
 						HSDisplayBracketConveyor.set_ScenePenWidth(1, HSDISPLAYLib.hsPenWidth.hsPenWidthThin)
 						lblLocateTimeBracketconveyor.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
-					Case Camera.BracketTape
-						StartTimer = VB.Timer()
-						'Clear out the tape instances on the screen
-						HSDisplayBracketTape.set_ScenePenWidth(0, HSDISPLAYLib.hsPenWidth.hsPenWidthNone)
-						HSDisplayBracketTape.set_ScenePenWidth(1, HSDISPLAYLib.hsPenWidth.hsPenWidthNone)
-						HSDisplayBracketTape.set_ScenePenWidth(2, HSDISPLAYLib.hsPenWidth.hsPenWidthNone)
-						HSDisplayBracketTape.set_ScenePenWidth(3, HSDISPLAYLib.hsPenWidth.hsPenWidthNone)
-						HSDisplayBracketTape.set_ScenePenWidth(4, HSDISPLAYLib.hsPenWidth.hsPenWidthNone)
-						'
-						HSDisplayBracketTape.set_SceneViewName(0, HSLoc(Camera.BracketTape).OutputInstanceSceneView)
-						HSDisplayBracketTape.set_SceneViewName(1, HSLoc(Camera.BracketTape).OutputInstanceSceneView)
-						HSDisplayBracketTape.set_ScenePenWidth(0, HSDISPLAYLib.hsPenWidth.hsPenWidthThin)
-						HSDisplayBracketTape.set_ScenePenWidth(1, HSDISPLAYLib.hsPenWidth.hsPenWidthThin)
-						lblLocateTimeBracketTape.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
-					Case Camera.BracketPrimer
-						StartTimer = VB.Timer()
-						HSDisplayBracketPrimer.set_SceneViewName(1, HSLoc(Camera.BracketPrimer).OutputInstanceSceneView)
-						HSDisplayBracketPrimer.set_ScenePenWidth(0, HSDISPLAYLib.hsPenWidth.hsPenWidthThin)
-						HSDisplayBracketPrimer.set_ScenePenWidth(1, HSDISPLAYLib.hsPenWidth.hsPenWidthThin)
-						lblLocateTimeBracketPrimer.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
 				End Select
 				' LocatorResults(Side).Status = 0
 				If HSLoc(Side).InstanceCount > 0 Then
@@ -2397,26 +2146,6 @@ Public Class frmMain
 							PLC_IO_Write_Bracket(1).VisStat = LocatorResults(Side).Status
 							DrawPointMarkers(Side)
 							HSDisplayBracketConveyor.RefreshMarkers()
-						Case Camera.BracketTape
-							'  lblVisionMessageBracketTape.Text = HSLoc(Side).MessageNumber(0) & " " & HSLoc(Side).MessageDescription(0)
-							If Side = Camera.BracketTape Then
-								lblVisionTapeXData.Text = LocatorResults(Side).Point.X.ToString("N2")
-								lblVisionTapeYData.Text = LocatorResults(Side).Point.Y.ToString("N2")
-								lblVisionTapeRData.Text = LocatorResults(Side).Angle.ToString("N2")
-								lblVisionTapeScoreData.Text = LocatorResults(Side).Score.ToString("N2")
-							End If
-							CheckThresholds(Side)
-							DrawPointMarkers(Side)
-						Case Camera.BracketPrimer
-							lblVisionMessageBracketPrimer.Text = HSLoc(Side).MessageNumber(0) & " " & HSLoc(Side).MessageDescription(0)
-							lblVisionPoseXBracketPrimer.Text = LocatorResults(Side).Point.X.ToString("N2")
-							lblVisionPoseYBracketPrimer.Text = LocatorResults(Side).Point.Y.ToString("N2")
-							lblVisionPoseRBracketPrimer.Text = LocatorResults(Side).Angle.ToString("N2")
-							lblVisionPoseScoreBracketPrimer.Text = LocatorResults(Side).Score.ToString("N2")
-							lblVisionPoseFitBracketPrimer.Text = LocatorResults(Side).Fit.ToString("N2")
-							CheckThresholds(Side)
-							DrawPointMarkers(Side)
-							HSDisplayBracketPrimer.RefreshMarkers()
 					End Select
 				Else
 					Select Case Side
@@ -2445,20 +2174,10 @@ Public Class frmMain
 							lblBracketInspectionConveyor.BackColor = Color.Red
 							lblVisionMessageBracketConveyor.BackColor = Color.Red
 							PLC_IO_Write_Bracket(1).VisStat = LocatorResults(Side).Status
-						Case Camera.BracketTape
-							lblVisionMessageBracketTape.Text = "Bracket Locate Image was Not located - " & CStr(HSLoc(Camera.BracketTape).MessageDescription(0))
-							lblBracketInspectionTape.BackColor = Color.Red
-							lblVisionMessageBracketTape.BackColor = Color.Red
-							LocatorResults(Side).Status = 2
 						Case Camera.BracketVerify
 							lblVisionMessageBracketVerify.Text = "Image was Not located - " & CStr(HSLoc(Camera.BracketVerify).MessageDescription(0))
 							lblBracketInspectionVerify.BackColor = Color.Red
 							lblVisionMessageBracketVerify.BackColor = Color.Red
-						Case Camera.BracketPrimer
-							lblVisionMessageBracketPrimer.Text = "Image was Not located - " & CStr(HSLoc(Camera.BracketPrimer).MessageDescription(0))
-							lblBracketInspectionPrimer.BackColor = Color.Red
-							lblVisionMessageBracketPrimer.BackColor = Color.Red
-							LocatorResults(Side).Status = 2
 					End Select
 				End If
 			Else
@@ -2493,17 +2212,6 @@ Public Class frmMain
 						lblVisionMessageBracketConveyor.Text = CStr(HSAcq.ErrorDescription)
 						lblBracketInspectionConveyor.BackColor = Color.Red
 						lblVisionMessageBracketConveyor.BackColor = Color.Red
-					Case Camera.BracketTape
-						HSDisplayBracketTape.set_ScenePenWidth(1, HSDISPLAYLib.hsPenWidth.hsPenWidthNone)
-						lblVisionMessageBracketTape.Text = CStr(HSAcq.ErrorDescription)
-						lblBracketInspectionTape.BackColor = Color.Red
-						lblVisionMessageBracketTape.BackColor = Color.Red
-
-					Case Camera.BracketPrimer
-						HSDisplayBracketPrimer.set_ScenePenWidth(1, HSDISPLAYLib.hsPenWidth.hsPenWidthNone)
-						lblVisionMessageBracketPrimer.Text = CStr(HSAcq.ErrorDescription)
-						lblBracketInspectionPrimer.BackColor = Color.Red
-						lblVisionMessageBracketPrimer.BackColor = Color.Red
 				End Select
 			End If
 			If eText Then
@@ -2523,14 +2231,8 @@ Public Class frmMain
 					Case Camera.BracketAtDialTable
 						HSDisplayBracketConveyor.RemoveAllMarker()
 						eText = False
-					Case Camera.BracketTape
-						'HSDisplayBracketTape.RemoveAllMarker()
-						eText = False
 					Case Camera.BracketVerify
 						HSDisplayCenterBracketVerify.RemoveAllMarker()
-						eText = False
-					Case Camera.BracketPrimer
-						HSDisplayBracketPrimer.RemoveAllMarker()
 						eText = False
 				End Select
 			Else
@@ -2629,37 +2331,6 @@ Public Class frmMain
 						eText = True
 						lblVisionMessageBracketConveyor.BackColor = System.Drawing.Color.Red
 						lblBracketInspectionConveyor.BackColor = Color.Red
-						LocatorResults(Side).Status = 2
-					End If
-				Case Camera.BracketTape
-					If LocatorResults(Side).Score >= CDbl(updnScoreLimitTapeBracketLocator.Value) Then
-						lblVisionMessageBracketTape.Text = "Image was successfully located" & vbCrLf & Date.Now
-						lblVisionMessageBracketTape.BackColor = System.Drawing.SystemColors.Control
-						LocatorResults(Side).Status = 1
-						lblBracketInspectionTape.BackColor = Color.YellowGreen
-					Else
-						lblVisionMessageBracketTape.BackColor = Color.Red
-						'   lblVisionMessageBracketTape.ForeColor = Color.WhiteSmoke
-						lblVisionMessageBracketTape.Text = "Score was too low on Bracket Locate"
-						eText = True
-						lblVisionMessageBracketTape.BackColor = System.Drawing.Color.Red
-						lblBracketInspectionTape.BackColor = Color.Red
-						LocatorResults(Side).Status = 2
-					End If
-				Case Camera.BracketPrimer
-					If LocatorResults(Side).Score >= CDbl(updnScoreLimitBracketPrimer.Value) Then
-						lblVisionMessageBracketPrimer.Text = "Image was successfully located" & vbCrLf & Date.Now
-						lblVisionMessageBracketPrimer.BackColor = System.Drawing.SystemColors.Control
-						lblVisionPoseXBracketPrimer.BackColor = System.Drawing.SystemColors.Control
-						lblVisionPoseYBracketPrimer.BackColor = System.Drawing.SystemColors.Control
-						lblVisionPoseRBracketPrimer.BackColor = System.Drawing.SystemColors.Control
-						LocatorResults(Side).Status = 1
-						lblBracketInspectionPrimer.BackColor = Color.YellowGreen
-					Else
-						lblVisionMessageBracketPrimer.Text = "Score was too low"
-						eText = True
-						lblVisionMessageBracketPrimer.BackColor = System.Drawing.Color.Red
-						lblBracketInspectionPrimer.BackColor = Color.Red
 						LocatorResults(Side).Status = 2
 					End If
 				Case Camera.Driver
@@ -2777,17 +2448,7 @@ Public Class frmMain
 		End Try
 	End Sub
 
-	Private Sub DrawRectangleMarker(display As AxHSDisplay, name As String, x As Single, y As Single, r As String, toolwidth As Single, toolheight As Single, ByVal color As Int32, ByVal constraints As Int32)
-		' Draws a Hexsight Rectangle on the display
-		display.AddRectangleMarker(name, x, y, toolwidth, toolheight, True) 'user drawable box
-		display.set_RectangleMarkerHeight(name, toolheight)
-		display.set_RectangleMarkerWidth(name, toolwidth)
-		display.set_RectangleMarkerRotation(name, r)
-		display.set_MarkerColor(name, color)
-		display.set_RectangleMarkerConstraints(name, constraints)
-	End Sub
-
-	Private Sub DisplayBlobRegions(BlobName As String)
+	Private Sub DrawBlobRectangles(BlobName As String)
 		'Dim butn As Button
 		'butn = DirectCast(Sender, Button)lo
 		'Dim X, Y, R, Width, height As Single
@@ -2834,6 +2495,51 @@ Public Class frmMain
 			ShowVBErrors("Blob Training", ex.Message)
 		End Try
 	End Sub
+
+	Private Sub DrawRectangleMarker(display As AxHSDisplay, name As String, x As Single, y As Single, r As String, toolwidth As Single, toolheight As Single, ByVal color As Int32, ByVal constraints As Int32)
+		' Draws a Hexsight Rectangle on the display
+		display.AddRectangleMarker(name, x, y, toolwidth, toolheight, True) 'user drawable box
+		display.set_RectangleMarkerHeight(name, toolheight)
+		display.set_RectangleMarkerWidth(name, toolwidth)
+		display.set_RectangleMarkerRotation(name, r)
+		display.set_MarkerColor(name, color)
+		display.set_RectangleMarkerConstraints(name, constraints)
+	End Sub
+
+	Private Sub HSMain_RectangleMarkerChange(ByVal sender As Object, ByVal e As AxHSDISPLAYLib._DHSDisplayEvents_RectangleMarkerChangeEvent) Handles _
+	HSDisplayBracketConveyor.RectangleMarkerChange
+		'TODO add code to save to the Bracket Database, we may need to do the actual save x number of seconds after this event occurs.
+		'If Not PasswordValue Then Exit Sub
+		If sender.name.contains("BracketConveyor") Then
+			'Update the Locator Search Area
+			HSLoc(Camera.BracketVerify).ToolPositionX = e.x
+			HSLoc(Camera.BracketVerify).ToolPositionY = e.y
+			HSLoc(Camera.BracketVerify).ToolWidth = e.width
+			HSLoc(Camera.BracketVerify).ToolHeight = e.height
+			'Save Limits in Settings Database
+			frmDataBase.SetValue("Bracket", "Value", "X", CSng(e.x))
+			frmDataBase.SetValue("Bracket", "Value", "Y", CSng(e.y))
+			frmDataBase.SetValue("Bracket", "Value", "Width", CSng(e.width))
+			frmDataBase.SetValue("Bracket", "Value", "Height", CSng(e.height))
+		End If
+	End Sub
+
+	Private Sub AddSearchRangeArea(Display As AxHSDisplay, ByVal Side As Int16)
+		With Display
+			.AddRectangleMarker("Search Area", HSLoc(Side).ToolPositionX, HSLoc(Side).ToolPositionY, HSLoc(Side).ToolWidth, HSLoc(Side).ToolHeight, True)
+			.set_MarkerDisplayName("Search Area", True)
+			.set_MarkerColor("Search Area", HSDISPLAYLib.hsColor.hsGreen)
+			If True Then 'PasswordValue Then
+				.set_RectangleMarkerConstraints("Search Area", HSDISPLAYLib.hsRectangleMarkerConstraints.hsRectangleCornerBasedEdition)
+				.set_MarkerLineStyle("Search Area", HSDISPLAYLib.hsMarkerLineStyle.hsSolid)
+			Else
+				.set_RectangleMarkerConstraints("Search Area", HSDISPLAYLib.hsRectangleMarkerConstraints.hsRectangleNoEdit)
+				.set_MarkerLineStyle("Search Area", HSDISPLAYLib.hsMarkerLineStyle.hsDash)
+			End If
+			.Refresh()
+		End With
+	End Sub
+
 #End Region
 
 #Region "Timers"
@@ -3409,14 +3115,7 @@ Public Class frmMain
 			If Not Success Then
 				MsgBox("Unable to load the model file for the Bracket Side Conveyor")
 			End If
-			Success = HSLoc(Camera.BracketTape).LoadModelDatabase(ConfigPath & "Bracket Tape Locate.hdb")
-			If Not Success Then
-				MsgBox("Unable to load the model file for the Tape Bracket Locator")
-			End If
-			Success = HSLoc(Camera.BracketPrimer).LoadModelDatabase(ConfigPath & "Bracket Primer Locate.hdb")
-			If Not Success Then
-				MsgBox("Unable to load the model file for the Bracket Primer Verification")
-			End If
+
 			'Bracket Primer 1-5 load
 			'TODO Modify the code below to use the bracket database so that Value is replaced by X,Y,R,ToolWidth,ToolHeight
 			For i As Int16 = 1 To 5
@@ -3496,30 +3195,7 @@ Public Class frmMain
 		lblTrackPassengerValue.Text = "Minimum Area " & PassengerBlobVariance ' & "%"
 	End Sub
 
-	Private Sub updnTape(sender As Object, e As EventArgs) Handles updnTapeMinAreaBottomLeft.ValueChanged, updnTapeMinAreaBottomRight.ValueChanged, updnTapeMinAreaTopLeft.ValueChanged,
-					updnTapeMinAreaTopRight.ValueChanged
-		Dim updn As NumericUpDown
-		If InitializingForm Then Exit Sub
-		updn = DirectCast(sender, NumericUpDown)
 
-		Select Case updn.Name
-			Case updnTapeMinAreaBottomLeft.Name
-				frmDataBase.SetValue("Bracket", "Value", "updnTapeVarianceBottomLeft", updnTapeMinAreaBottomLeft.Value)
-				TapeBlobVarianceBottomLeft = (SavedTapeBlobAreaBottomLeft * (0.01 * updnTapeMinAreaBottomLeft.Value))
-
-			Case updnTapeMinAreaBottomRight.Name
-				frmDataBase.SetValue("Bracket", "Value", "updnTapeVarianceBottomRight", updnTapeMinAreaBottomRight.Value)
-				TapeBlobVarianceBottomRight = (SavedTapeBlobAreaBottomRight * (0.01 * updnTapeMinAreaBottomRight.Value))
-
-			Case updnTapeMinAreaTopLeft.Name
-				frmDataBase.SetValue("Bracket", "Value", "updnTapeVarianceTopLeft", updnTapeMinAreaTopLeft.Value)
-				TapeBlobVarianceTopRight = (SavedTapeBlobAreaTopLeft * (0.01 * updnTapeMinAreaTopLeft.Value))
-
-			Case updnTapeMinAreaTopRight.Name
-				frmDataBase.SetValue("Bracket", "Value", "updnTapeVarianceTopRight", updnTapeMinAreaTopRight.Value)
-				TapeBlobVarianceTopLeft = (SavedTapeBlobAreaTopRight * (0.01 * updnTapeMinAreaTopRight.Value))
-		End Select
-	End Sub
 
 	'Private Sub trkTape(sender As Object, e As EventArgs) Handles trkTapeVarianceBottomLeft.Scroll, trkTapeVarianceBottomRight.Scroll, trkTapeVarianceTopLeft.Scroll,
 	'      trkTapeVarianceTopRight.Scroll
@@ -3769,7 +3445,7 @@ Public Class frmMain
 					End If
 			End Select
 			HSBlob = HSApp.ProcessManager.Process(BlobName)
-			DisplayBlobRegions(BlobName)
+			DrawBlobRectangles(BlobName)
 			'Get the location of the Rectangle before it is moved
 			OriginalRectX = Display.get_MarkerX(BlobName)
 			OriginalRectY = Display.get_MarkerY(BlobName)
@@ -4085,6 +3761,7 @@ Public Class frmMain
 	Private Sub btnShiftCntrs_Click(sender As Object, e As EventArgs) Handles btnShiftCntrs.Click
 		frmShiftCnts.Show()
 	End Sub
+
 
 	Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 		LoadBracket()
