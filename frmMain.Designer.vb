@@ -191,7 +191,7 @@
 		Me.Label18 = New System.Windows.Forms.Label()
 		Me.Label17 = New System.Windows.Forms.Label()
 		Me.Label16 = New System.Windows.Forms.Label()
-		Me.Button2 = New System.Windows.Forms.Button()
+		Me.btnTest = New System.Windows.Forms.Button()
 		Me.lblStatus = New System.Windows.Forms.Label()
 		Me.lblHeartBeat = New System.Windows.Forms.Label()
 		Me.lblmessagedesc = New System.Windows.Forms.Label()
@@ -316,6 +316,7 @@
 		Me.lblLocatorTimeBracketTape = New System.Windows.Forms.Label()
 		Me.lblVisionTapeScore = New System.Windows.Forms.Label()
 		Me.grpHSDisplayBracketTape = New System.Windows.Forms.GroupBox()
+		Me.HSDisplayBracketTape = New AxHSDISPLAYLib.AxHSDisplay()
 		Me.tabpageBracketPrimerVerify = New System.Windows.Forms.TabPage()
 		Me.grpVisionBracketPrimer = New System.Windows.Forms.GroupBox()
 		Me.grpBracketPrimerReference = New System.Windows.Forms.GroupBox()
@@ -364,6 +365,7 @@
 		Me.lblLocateTimeBracketPrimer = New System.Windows.Forms.Label()
 		Me.lblLocatorTime2 = New System.Windows.Forms.Label()
 		Me.grpHSDisplayBracketPrimer = New System.Windows.Forms.GroupBox()
+		Me.HSDisplayBracketPrimer = New AxHSDISPLAYLib.AxHSDisplay()
 		Me.tabpageBracketLocateAtConveyor = New System.Windows.Forms.TabPage()
 		Me.grpVisionBracketLocateatConveyor = New System.Windows.Forms.GroupBox()
 		Me.grpCameraControlLocateConveyor = New System.Windows.Forms.GroupBox()
@@ -398,6 +400,7 @@
 		Me.lblVisionTimeBracketConveyor = New System.Windows.Forms.Label()
 		Me.lblVisionScoreBracketConveyor = New System.Windows.Forms.Label()
 		Me.grpHSDisplayBracketConveyor = New System.Windows.Forms.GroupBox()
+		Me.HSDisplayBracketConveyor = New AxHSDISPLAYLib.AxHSDisplay()
 		Me.tabPageBracketLocate = New System.Windows.Forms.TabPage()
 		Me.grpVisionGlassLocate = New System.Windows.Forms.GroupBox()
 		Me.grpCameraControl = New System.Windows.Forms.GroupBox()
@@ -447,6 +450,7 @@
 		Me.lblVisionTimeBracket = New System.Windows.Forms.Label()
 		Me.lblVisionScoreBracket = New System.Windows.Forms.Label()
 		Me.grpHSDisplayGlassLocation = New System.Windows.Forms.GroupBox()
+		Me.HSDisplayLocateGlass = New AxHSDISPLAYLib.AxHSDisplay()
 		Me.tabPageCenterBracketVerify = New System.Windows.Forms.TabPage()
 		Me.grpVisionCenterVerify = New System.Windows.Forms.GroupBox()
 		Me.grpGlassVerifyValues = New System.Windows.Forms.GroupBox()
@@ -502,6 +506,7 @@
 		Me.lblVisionTimeBracketVerify = New System.Windows.Forms.Label()
 		Me.lblVisionScoreBracketVerify = New System.Windows.Forms.Label()
 		Me.grpHSDisplayBracketVerify = New System.Windows.Forms.GroupBox()
+		Me.HSDisplayCenterBracketVerify = New AxHSDISPLAYLib.AxHSDisplay()
 		Me.tabPageDriverCam = New System.Windows.Forms.TabPage()
 		Me.grpVisionDriver = New System.Windows.Forms.GroupBox()
 		Me.grpCameraControlDriver = New System.Windows.Forms.GroupBox()
@@ -547,6 +552,7 @@
 		Me.lblVisionTimeDriver = New System.Windows.Forms.Label()
 		Me.lblVisionScoreDriver = New System.Windows.Forms.Label()
 		Me.grpHSDisplayDriver = New System.Windows.Forms.GroupBox()
+		Me.HSDisplayDriver = New AxHSDISPLAYLib.AxHSDisplay()
 		Me.tabPageCenterCam = New System.Windows.Forms.TabPage()
 		Me.grpVisionCenter = New System.Windows.Forms.GroupBox()
 		Me.grpCameraControlCenter = New System.Windows.Forms.GroupBox()
@@ -592,6 +598,7 @@
 		Me.lblVisionTimeCenter = New System.Windows.Forms.Label()
 		Me.lblVisionScoreCenter = New System.Windows.Forms.Label()
 		Me.grpHSDisplayCenter = New System.Windows.Forms.GroupBox()
+		Me.HSDisplayCenter = New AxHSDISPLAYLib.AxHSDisplay()
 		Me.tabPagePassCam = New System.Windows.Forms.TabPage()
 		Me.grpVisionPassenger = New System.Windows.Forms.GroupBox()
 		Me.grpCameraControlPassenger = New System.Windows.Forms.GroupBox()
@@ -637,6 +644,7 @@
 		Me.lblVisionTimePassenger = New System.Windows.Forms.Label()
 		Me.lblVisionScorePassenger = New System.Windows.Forms.Label()
 		Me.grpHSDisplayPassenger = New System.Windows.Forms.GroupBox()
+		Me.HSDisplayPassenger = New AxHSDISPLAYLib.AxHSDisplay()
 		Me.tabPagePosition = New System.Windows.Forms.TabPage()
 		Me.grpPosition = New System.Windows.Forms.GroupBox()
 		Me.GroupBox1 = New System.Windows.Forms.GroupBox()
@@ -650,14 +658,6 @@
 		Me.lstVBError = New System.Windows.Forms.ListBox()
 		Me.lblCurrentUser = New System.Windows.Forms.Label()
 		Me.ImageList1 = New System.Windows.Forms.ImageList(Me.components)
-		Me.HSDisplayBracketTape = New AxHSDISPLAYLib.AxHSDisplay()
-		Me.HSDisplayBracketPrimer = New AxHSDISPLAYLib.AxHSDisplay()
-		Me.HSDisplayBracketConveyor = New AxHSDISPLAYLib.AxHSDisplay()
-		Me.HSDisplayLocateGlass = New AxHSDISPLAYLib.AxHSDisplay()
-		Me.HSDisplayCenterBracketVerify = New AxHSDISPLAYLib.AxHSDisplay()
-		Me.HSDisplayDriver = New AxHSDISPLAYLib.AxHSDisplay()
-		Me.HSDisplayCenter = New AxHSDISPLAYLib.AxHSDisplay()
-		Me.HSDisplayPassenger = New AxHSDISPLAYLib.AxHSDisplay()
 		Me.MainMenu1.SuspendLayout
 		CType(Me.updnScoreLimit, System.ComponentModel.ISupportInitialize).BeginInit
 		CType(Me.updnLocationX, System.ComponentModel.ISupportInitialize).BeginInit
@@ -711,6 +711,7 @@
 		CType(Me.pbBracketTape, System.ComponentModel.ISupportInitialize).BeginInit
 		Me.grpLocatorControlsBracketTape.SuspendLayout
 		Me.grpHSDisplayBracketTape.SuspendLayout
+		CType(Me.HSDisplayBracketTape, System.ComponentModel.ISupportInitialize).BeginInit
 		Me.tabpageBracketPrimerVerify.SuspendLayout
 		Me.grpVisionBracketPrimer.SuspendLayout
 		Me.grpBracketPrimerReference.SuspendLayout
@@ -728,6 +729,7 @@
 		Me.grpStatusBracketLocatePrimer.SuspendLayout
 		Me.grpLocatorControlsBracketPrimer.SuspendLayout
 		Me.grpHSDisplayBracketPrimer.SuspendLayout
+		CType(Me.HSDisplayBracketPrimer, System.ComponentModel.ISupportInitialize).BeginInit
 		Me.tabpageBracketLocateAtConveyor.SuspendLayout
 		Me.grpVisionBracketLocateatConveyor.SuspendLayout
 		Me.grpCameraControlLocateConveyor.SuspendLayout
@@ -738,6 +740,7 @@
 		CType(Me.pbBracketConveyorCamera, System.ComponentModel.ISupportInitialize).BeginInit
 		Me.grpStatusBracketLocateAtConveoyr.SuspendLayout
 		Me.grpHSDisplayBracketConveyor.SuspendLayout
+		CType(Me.HSDisplayBracketConveyor, System.ComponentModel.ISupportInitialize).BeginInit
 		Me.tabPageBracketLocate.SuspendLayout
 		Me.grpVisionGlassLocate.SuspendLayout
 		Me.grpCameraControl.SuspendLayout
@@ -749,6 +752,7 @@
 		CType(Me.pctTemperature, System.ComponentModel.ISupportInitialize).BeginInit
 		Me.grpVisionStatus.SuspendLayout
 		Me.grpHSDisplayGlassLocation.SuspendLayout
+		CType(Me.HSDisplayLocateGlass, System.ComponentModel.ISupportInitialize).BeginInit
 		Me.tabPageCenterBracketVerify.SuspendLayout
 		Me.grpVisionCenterVerify.SuspendLayout
 		Me.grpGlassVerifyValues.SuspendLayout
@@ -763,6 +767,7 @@
 		Me.grpLocatorControlsBracketVerify.SuspendLayout
 		Me.grpVisionStatusVerify.SuspendLayout
 		Me.grpHSDisplayBracketVerify.SuspendLayout
+		CType(Me.HSDisplayCenterBracketVerify, System.ComponentModel.ISupportInitialize).BeginInit
 		Me.tabPageDriverCam.SuspendLayout
 		Me.grpVisionDriver.SuspendLayout
 		Me.grpCameraControlDriver.SuspendLayout
@@ -777,6 +782,7 @@
 		CType(Me.pbDriverTemperature, System.ComponentModel.ISupportInitialize).BeginInit
 		Me.grpStatusDriver.SuspendLayout
 		Me.grpHSDisplayDriver.SuspendLayout
+		CType(Me.HSDisplayDriver, System.ComponentModel.ISupportInitialize).BeginInit
 		Me.tabPageCenterCam.SuspendLayout
 		Me.grpVisionCenter.SuspendLayout
 		Me.grpCameraControlCenter.SuspendLayout
@@ -791,6 +797,7 @@
 		CType(Me.pbCenterCameraStatus, System.ComponentModel.ISupportInitialize).BeginInit
 		Me.grpCenterVisStatus.SuspendLayout
 		Me.grpHSDisplayCenter.SuspendLayout
+		CType(Me.HSDisplayCenter, System.ComponentModel.ISupportInitialize).BeginInit
 		Me.tabPagePassCam.SuspendLayout
 		Me.grpVisionPassenger.SuspendLayout
 		Me.grpCameraControlPassenger.SuspendLayout
@@ -805,18 +812,11 @@
 		CType(Me.pbPassengerTemperature, System.ComponentModel.ISupportInitialize).BeginInit
 		Me.grpPassengerVisStatus.SuspendLayout
 		Me.grpHSDisplayPassenger.SuspendLayout
+		CType(Me.HSDisplayPassenger, System.ComponentModel.ISupportInitialize).BeginInit
 		Me.tabPagePosition.SuspendLayout
 		Me.grpPosition.SuspendLayout
 		Me.GroupBox1.SuspendLayout
 		Me.grpVBErrors.SuspendLayout
-		CType(Me.HSDisplayBracketTape, System.ComponentModel.ISupportInitialize).BeginInit
-		CType(Me.HSDisplayBracketPrimer, System.ComponentModel.ISupportInitialize).BeginInit
-		CType(Me.HSDisplayBracketConveyor, System.ComponentModel.ISupportInitialize).BeginInit
-		CType(Me.HSDisplayLocateGlass, System.ComponentModel.ISupportInitialize).BeginInit
-		CType(Me.HSDisplayCenterBracketVerify, System.ComponentModel.ISupportInitialize).BeginInit
-		CType(Me.HSDisplayDriver, System.ComponentModel.ISupportInitialize).BeginInit
-		CType(Me.HSDisplayCenter, System.ComponentModel.ISupportInitialize).BeginInit
-		CType(Me.HSDisplayPassenger, System.ComponentModel.ISupportInitialize).BeginInit
 		Me.SuspendLayout
 		'
 		'MainMenu1
@@ -2817,7 +2817,7 @@
 		Me.GrpRobot.Controls.Add(Me.Label18)
 		Me.GrpRobot.Controls.Add(Me.Label17)
 		Me.GrpRobot.Controls.Add(Me.Label16)
-		Me.GrpRobot.Controls.Add(Me.Button2)
+		Me.GrpRobot.Controls.Add(Me.btnTest)
 		Me.GrpRobot.Controls.Add(Me.lblStatus)
 		Me.GrpRobot.Controls.Add(Me.lblHeartBeat)
 		Me.GrpRobot.Controls.Add(Me.lblmessagedesc)
@@ -2931,16 +2931,15 @@
 		Me.Label16.Text = "Bracket Locate Tape"
 		Me.Label16.Visible = False
 		'
-		'Button2
+		'btnTest
 		'
-		Me.Button2.Font = New System.Drawing.Font("Arial", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-		Me.Button2.Location = New System.Drawing.Point(10, 133)
-		Me.Button2.Name = "Button2"
-		Me.Button2.Size = New System.Drawing.Size(66, 35)
-		Me.Button2.TabIndex = 243
-		Me.Button2.Text = "Run"
-		Me.Button2.UseVisualStyleBackColor = True
-		Me.Button2.Visible = False
+		Me.btnTest.Font = New System.Drawing.Font("Arial", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+		Me.btnTest.Location = New System.Drawing.Point(10, 133)
+		Me.btnTest.Name = "btnTest"
+		Me.btnTest.Size = New System.Drawing.Size(66, 35)
+		Me.btnTest.TabIndex = 243
+		Me.btnTest.Text = "Test"
+		Me.btnTest.UseVisualStyleBackColor = True
 		'
 		'lblStatus
 		'
@@ -4400,6 +4399,15 @@
 		Me.grpHSDisplayBracketTape.TabIndex = 1
 		Me.grpHSDisplayBracketTape.TabStop = False
 		'
+		'HSDisplayBracketTape
+		'
+		Me.HSDisplayBracketTape.Enabled = True
+		Me.HSDisplayBracketTape.Location = New System.Drawing.Point(6, 96)
+		Me.HSDisplayBracketTape.Name = "HSDisplayBracketTape"
+		Me.HSDisplayBracketTape.OcxState = CType(resources.GetObject("HSDisplayBracketTape.OcxState"), System.Windows.Forms.AxHost.State)
+		Me.HSDisplayBracketTape.Size = New System.Drawing.Size(891, 578)
+		Me.HSDisplayBracketTape.TabIndex = 82
+		'
 		'tabpageBracketPrimerVerify
 		'
 		Me.tabpageBracketPrimerVerify.BackColor = System.Drawing.SystemColors.Control
@@ -4988,6 +4996,15 @@
 		Me.grpHSDisplayBracketPrimer.TabIndex = 1
 		Me.grpHSDisplayBracketPrimer.TabStop = False
 		'
+		'HSDisplayBracketPrimer
+		'
+		Me.HSDisplayBracketPrimer.Enabled = True
+		Me.HSDisplayBracketPrimer.Location = New System.Drawing.Point(14, 22)
+		Me.HSDisplayBracketPrimer.Name = "HSDisplayBracketPrimer"
+		Me.HSDisplayBracketPrimer.OcxState = CType(resources.GetObject("HSDisplayBracketPrimer.OcxState"), System.Windows.Forms.AxHost.State)
+		Me.HSDisplayBracketPrimer.Size = New System.Drawing.Size(468, 293)
+		Me.HSDisplayBracketPrimer.TabIndex = 82
+		'
 		'tabpageBracketLocateAtConveyor
 		'
 		Me.tabpageBracketLocateAtConveyor.BackColor = System.Drawing.Color.Transparent
@@ -5411,6 +5428,15 @@
 		Me.grpHSDisplayBracketConveyor.Size = New System.Drawing.Size(1502, 745)
 		Me.grpHSDisplayBracketConveyor.TabIndex = 0
 		Me.grpHSDisplayBracketConveyor.TabStop = False
+		'
+		'HSDisplayBracketConveyor
+		'
+		Me.HSDisplayBracketConveyor.Enabled = True
+		Me.HSDisplayBracketConveyor.Location = New System.Drawing.Point(14, 22)
+		Me.HSDisplayBracketConveyor.Name = "HSDisplayBracketConveyor"
+		Me.HSDisplayBracketConveyor.OcxState = CType(resources.GetObject("HSDisplayBracketConveyor.OcxState"), System.Windows.Forms.AxHost.State)
+		Me.HSDisplayBracketConveyor.Size = New System.Drawing.Size(468, 293)
+		Me.HSDisplayBracketConveyor.TabIndex = 82
 		'
 		'tabPageBracketLocate
 		'
@@ -6019,6 +6045,15 @@
 		Me.grpHSDisplayGlassLocation.Size = New System.Drawing.Size(1502, 743)
 		Me.grpHSDisplayGlassLocation.TabIndex = 77
 		Me.grpHSDisplayGlassLocation.TabStop = False
+		'
+		'HSDisplayLocateGlass
+		'
+		Me.HSDisplayLocateGlass.Enabled = True
+		Me.HSDisplayLocateGlass.Location = New System.Drawing.Point(14, 22)
+		Me.HSDisplayLocateGlass.Name = "HSDisplayLocateGlass"
+		Me.HSDisplayLocateGlass.OcxState = CType(resources.GetObject("HSDisplayLocateGlass.OcxState"), System.Windows.Forms.AxHost.State)
+		Me.HSDisplayLocateGlass.Size = New System.Drawing.Size(481, 290)
+		Me.HSDisplayLocateGlass.TabIndex = 81
 		'
 		'tabPageCenterBracketVerify
 		'
@@ -6669,6 +6704,15 @@
 		Me.grpHSDisplayBracketVerify.TabIndex = 78
 		Me.grpHSDisplayBracketVerify.TabStop = False
 		'
+		'HSDisplayCenterBracketVerify
+		'
+		Me.HSDisplayCenterBracketVerify.Enabled = True
+		Me.HSDisplayCenterBracketVerify.Location = New System.Drawing.Point(14, 22)
+		Me.HSDisplayCenterBracketVerify.Name = "HSDisplayCenterBracketVerify"
+		Me.HSDisplayCenterBracketVerify.OcxState = CType(resources.GetObject("HSDisplayCenterBracketVerify.OcxState"), System.Windows.Forms.AxHost.State)
+		Me.HSDisplayCenterBracketVerify.Size = New System.Drawing.Size(468, 293)
+		Me.HSDisplayCenterBracketVerify.TabIndex = 81
+		'
 		'tabPageDriverCam
 		'
 		Me.tabPageDriverCam.BackColor = System.Drawing.SystemColors.Control
@@ -7214,6 +7258,15 @@
 		Me.grpHSDisplayDriver.Size = New System.Drawing.Size(1502, 745)
 		Me.grpHSDisplayDriver.TabIndex = 78
 		Me.grpHSDisplayDriver.TabStop = False
+		'
+		'HSDisplayDriver
+		'
+		Me.HSDisplayDriver.Enabled = True
+		Me.HSDisplayDriver.Location = New System.Drawing.Point(14, 22)
+		Me.HSDisplayDriver.Name = "HSDisplayDriver"
+		Me.HSDisplayDriver.OcxState = CType(resources.GetObject("HSDisplayDriver.OcxState"), System.Windows.Forms.AxHost.State)
+		Me.HSDisplayDriver.Size = New System.Drawing.Size(468, 293)
+		Me.HSDisplayDriver.TabIndex = 81
 		'
 		'tabPageCenterCam
 		'
@@ -7768,6 +7821,15 @@
 		Me.grpHSDisplayCenter.TabIndex = 79
 		Me.grpHSDisplayCenter.TabStop = False
 		'
+		'HSDisplayCenter
+		'
+		Me.HSDisplayCenter.Enabled = True
+		Me.HSDisplayCenter.Location = New System.Drawing.Point(14, 22)
+		Me.HSDisplayCenter.Name = "HSDisplayCenter"
+		Me.HSDisplayCenter.OcxState = CType(resources.GetObject("HSDisplayCenter.OcxState"), System.Windows.Forms.AxHost.State)
+		Me.HSDisplayCenter.Size = New System.Drawing.Size(468, 293)
+		Me.HSDisplayCenter.TabIndex = 81
+		'
 		'tabPagePassCam
 		'
 		Me.tabPagePassCam.BackColor = System.Drawing.SystemColors.Control
@@ -8318,6 +8380,15 @@
 		Me.grpHSDisplayPassenger.TabIndex = 80
 		Me.grpHSDisplayPassenger.TabStop = False
 		'
+		'HSDisplayPassenger
+		'
+		Me.HSDisplayPassenger.Enabled = True
+		Me.HSDisplayPassenger.Location = New System.Drawing.Point(14, 22)
+		Me.HSDisplayPassenger.Name = "HSDisplayPassenger"
+		Me.HSDisplayPassenger.OcxState = CType(resources.GetObject("HSDisplayPassenger.OcxState"), System.Windows.Forms.AxHost.State)
+		Me.HSDisplayPassenger.Size = New System.Drawing.Size(468, 293)
+		Me.HSDisplayPassenger.TabIndex = 81
+		'
 		'tabPagePosition
 		'
 		Me.tabPagePosition.Controls.Add(Me.grpPosition)
@@ -8454,78 +8525,6 @@
 		Me.ImageList1.ImageSize = New System.Drawing.Size(16, 16)
 		Me.ImageList1.TransparentColor = System.Drawing.Color.Transparent
 		'
-		'HSDisplayBracketTape
-		'
-		Me.HSDisplayBracketTape.Enabled = True
-		Me.HSDisplayBracketTape.Location = New System.Drawing.Point(6, 96)
-		Me.HSDisplayBracketTape.Name = "HSDisplayBracketTape"
-		Me.HSDisplayBracketTape.OcxState = CType(resources.GetObject("HSDisplayBracketTape.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.HSDisplayBracketTape.Size = New System.Drawing.Size(891, 578)
-		Me.HSDisplayBracketTape.TabIndex = 82
-		'
-		'HSDisplayBracketPrimer
-		'
-		Me.HSDisplayBracketPrimer.Enabled = True
-		Me.HSDisplayBracketPrimer.Location = New System.Drawing.Point(14, 22)
-		Me.HSDisplayBracketPrimer.Name = "HSDisplayBracketPrimer"
-		Me.HSDisplayBracketPrimer.OcxState = CType(resources.GetObject("HSDisplayBracketPrimer.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.HSDisplayBracketPrimer.Size = New System.Drawing.Size(468, 293)
-		Me.HSDisplayBracketPrimer.TabIndex = 82
-		'
-		'HSDisplayBracketConveyor
-		'
-		Me.HSDisplayBracketConveyor.Enabled = True
-		Me.HSDisplayBracketConveyor.Location = New System.Drawing.Point(14, 22)
-		Me.HSDisplayBracketConveyor.Name = "HSDisplayBracketConveyor"
-		Me.HSDisplayBracketConveyor.OcxState = CType(resources.GetObject("HSDisplayBracketConveyor.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.HSDisplayBracketConveyor.Size = New System.Drawing.Size(468, 293)
-		Me.HSDisplayBracketConveyor.TabIndex = 82
-		'
-		'HSDisplayLocateGlass
-		'
-		Me.HSDisplayLocateGlass.Enabled = True
-		Me.HSDisplayLocateGlass.Location = New System.Drawing.Point(14, 22)
-		Me.HSDisplayLocateGlass.Name = "HSDisplayLocateGlass"
-		Me.HSDisplayLocateGlass.OcxState = CType(resources.GetObject("HSDisplayLocateGlass.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.HSDisplayLocateGlass.Size = New System.Drawing.Size(481, 290)
-		Me.HSDisplayLocateGlass.TabIndex = 81
-		'
-		'HSDisplayCenterBracketVerify
-		'
-		Me.HSDisplayCenterBracketVerify.Enabled = True
-		Me.HSDisplayCenterBracketVerify.Location = New System.Drawing.Point(14, 22)
-		Me.HSDisplayCenterBracketVerify.Name = "HSDisplayCenterBracketVerify"
-		Me.HSDisplayCenterBracketVerify.OcxState = CType(resources.GetObject("HSDisplayCenterBracketVerify.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.HSDisplayCenterBracketVerify.Size = New System.Drawing.Size(468, 293)
-		Me.HSDisplayCenterBracketVerify.TabIndex = 81
-		'
-		'HSDisplayDriver
-		'
-		Me.HSDisplayDriver.Enabled = True
-		Me.HSDisplayDriver.Location = New System.Drawing.Point(14, 22)
-		Me.HSDisplayDriver.Name = "HSDisplayDriver"
-		Me.HSDisplayDriver.OcxState = CType(resources.GetObject("HSDisplayDriver.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.HSDisplayDriver.Size = New System.Drawing.Size(468, 293)
-		Me.HSDisplayDriver.TabIndex = 81
-		'
-		'HSDisplayCenter
-		'
-		Me.HSDisplayCenter.Enabled = True
-		Me.HSDisplayCenter.Location = New System.Drawing.Point(14, 22)
-		Me.HSDisplayCenter.Name = "HSDisplayCenter"
-		Me.HSDisplayCenter.OcxState = CType(resources.GetObject("HSDisplayCenter.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.HSDisplayCenter.Size = New System.Drawing.Size(468, 293)
-		Me.HSDisplayCenter.TabIndex = 81
-		'
-		'HSDisplayPassenger
-		'
-		Me.HSDisplayPassenger.Enabled = True
-		Me.HSDisplayPassenger.Location = New System.Drawing.Point(14, 22)
-		Me.HSDisplayPassenger.Name = "HSDisplayPassenger"
-		Me.HSDisplayPassenger.OcxState = CType(resources.GetObject("HSDisplayPassenger.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.HSDisplayPassenger.Size = New System.Drawing.Size(468, 293)
-		Me.HSDisplayPassenger.TabIndex = 81
-		'
 		'frmMain
 		'
 		Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 16.0!)
@@ -8612,6 +8611,7 @@
 		Me.grpLocatorControlsBracketTape.ResumeLayout(False)
 		Me.grpLocatorControlsBracketTape.PerformLayout
 		Me.grpHSDisplayBracketTape.ResumeLayout(False)
+		CType(Me.HSDisplayBracketTape, System.ComponentModel.ISupportInitialize).EndInit
 		Me.tabpageBracketPrimerVerify.ResumeLayout(False)
 		Me.grpVisionBracketPrimer.ResumeLayout(False)
 		Me.grpBracketPrimerReference.ResumeLayout(False)
@@ -8634,6 +8634,7 @@
 		Me.grpLocatorControlsBracketPrimer.ResumeLayout(False)
 		Me.grpLocatorControlsBracketPrimer.PerformLayout
 		Me.grpHSDisplayBracketPrimer.ResumeLayout(False)
+		CType(Me.HSDisplayBracketPrimer, System.ComponentModel.ISupportInitialize).EndInit
 		Me.tabpageBracketLocateAtConveyor.ResumeLayout(False)
 		Me.grpVisionBracketLocateatConveyor.ResumeLayout(False)
 		Me.grpCameraControlLocateConveyor.ResumeLayout(False)
@@ -8647,6 +8648,7 @@
 		CType(Me.pbBracketConveyorCamera, System.ComponentModel.ISupportInitialize).EndInit
 		Me.grpStatusBracketLocateAtConveoyr.ResumeLayout(False)
 		Me.grpHSDisplayBracketConveyor.ResumeLayout(False)
+		CType(Me.HSDisplayBracketConveyor, System.ComponentModel.ISupportInitialize).EndInit
 		Me.tabPageBracketLocate.ResumeLayout(False)
 		Me.grpVisionGlassLocate.ResumeLayout(False)
 		Me.grpCameraControl.ResumeLayout(False)
@@ -8662,6 +8664,7 @@
 		CType(Me.pctTemperature, System.ComponentModel.ISupportInitialize).EndInit
 		Me.grpVisionStatus.ResumeLayout(False)
 		Me.grpHSDisplayGlassLocation.ResumeLayout(False)
+		CType(Me.HSDisplayLocateGlass, System.ComponentModel.ISupportInitialize).EndInit
 		Me.tabPageCenterBracketVerify.ResumeLayout(False)
 		Me.grpVisionCenterVerify.ResumeLayout(False)
 		Me.grpGlassVerifyValues.ResumeLayout(False)
@@ -8680,6 +8683,7 @@
 		Me.grpLocatorControlsBracketVerify.PerformLayout
 		Me.grpVisionStatusVerify.ResumeLayout(False)
 		Me.grpHSDisplayBracketVerify.ResumeLayout(False)
+		CType(Me.HSDisplayCenterBracketVerify, System.ComponentModel.ISupportInitialize).EndInit
 		Me.tabPageDriverCam.ResumeLayout(False)
 		Me.grpVisionDriver.ResumeLayout(False)
 		Me.grpCameraControlDriver.ResumeLayout(False)
@@ -8698,6 +8702,7 @@
 		CType(Me.pbDriverTemperature, System.ComponentModel.ISupportInitialize).EndInit
 		Me.grpStatusDriver.ResumeLayout(False)
 		Me.grpHSDisplayDriver.ResumeLayout(False)
+		CType(Me.HSDisplayDriver, System.ComponentModel.ISupportInitialize).EndInit
 		Me.tabPageCenterCam.ResumeLayout(False)
 		Me.grpVisionCenter.ResumeLayout(False)
 		Me.grpCameraControlCenter.ResumeLayout(False)
@@ -8716,6 +8721,7 @@
 		CType(Me.pbCenterCameraStatus, System.ComponentModel.ISupportInitialize).EndInit
 		Me.grpCenterVisStatus.ResumeLayout(False)
 		Me.grpHSDisplayCenter.ResumeLayout(False)
+		CType(Me.HSDisplayCenter, System.ComponentModel.ISupportInitialize).EndInit
 		Me.tabPagePassCam.ResumeLayout(False)
 		Me.grpVisionPassenger.ResumeLayout(False)
 		Me.grpCameraControlPassenger.ResumeLayout(False)
@@ -8734,19 +8740,12 @@
 		CType(Me.pbPassengerTemperature, System.ComponentModel.ISupportInitialize).EndInit
 		Me.grpPassengerVisStatus.ResumeLayout(False)
 		Me.grpHSDisplayPassenger.ResumeLayout(False)
+		CType(Me.HSDisplayPassenger, System.ComponentModel.ISupportInitialize).EndInit
 		Me.tabPagePosition.ResumeLayout(False)
 		Me.grpPosition.ResumeLayout(False)
 		Me.GroupBox1.ResumeLayout(False)
 		Me.GroupBox1.PerformLayout
 		Me.grpVBErrors.ResumeLayout(False)
-		CType(Me.HSDisplayBracketTape, System.ComponentModel.ISupportInitialize).EndInit
-		CType(Me.HSDisplayBracketPrimer, System.ComponentModel.ISupportInitialize).EndInit
-		CType(Me.HSDisplayBracketConveyor, System.ComponentModel.ISupportInitialize).EndInit
-		CType(Me.HSDisplayLocateGlass, System.ComponentModel.ISupportInitialize).EndInit
-		CType(Me.HSDisplayCenterBracketVerify, System.ComponentModel.ISupportInitialize).EndInit
-		CType(Me.HSDisplayDriver, System.ComponentModel.ISupportInitialize).EndInit
-		CType(Me.HSDisplayCenter, System.ComponentModel.ISupportInitialize).EndInit
-		CType(Me.HSDisplayPassenger, System.ComponentModel.ISupportInitialize).EndInit
 		Me.ResumeLayout(False)
 		Me.PerformLayout
 
@@ -9305,7 +9304,7 @@
 	Friend WithEvents updnTapeMinAreaTopRight As NumericUpDown
 	Friend WithEvents updnTapeMinAreaTopLeft As NumericUpDown
 	Friend WithEvents btnShiftCntrs As Button
-	Friend WithEvents Button2 As System.Windows.Forms.Button
+	Friend WithEvents btnTest As System.Windows.Forms.Button
 	Friend WithEvents lblVisionTapeScoreData As System.Windows.Forms.Label
 	Friend WithEvents lblVisionTapeTimeData As System.Windows.Forms.Label
 	Friend WithEvents lblVisionTapeRData As System.Windows.Forms.Label

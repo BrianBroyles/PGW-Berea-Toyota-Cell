@@ -20,7 +20,7 @@ Public Class SnapshotHelper
 			Camera.Timing.PixelClock.GetRange(s32Min, s32max, s32inc)
 			Camera.Timing.PixelClock.Set(s32max)
 			If (statusRet <> uEye.Defines.Status.Success) Then
-				'TODO
+				'TODO  Maybe delete msgbox
 				'MessageBox.Show("Camera initializing failed")
 				Return False
 			End If

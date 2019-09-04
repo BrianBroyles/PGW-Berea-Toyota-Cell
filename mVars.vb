@@ -122,24 +122,16 @@ Module mVars
 		Public plcTag_BracketGlassLocationStat As String
 		'Location of Bracket at conveyor
 		Public plcTag_BracketConveyorLocationStart As String
-		Public plcTag_BracketConveyorLocationX As String
-		Public plcTag_BracketConveyorLocationY As String
-		Public plcTag_BracketConveyorLocationR As String
-		Public plcTag_BracketConveyorLocationDone As String
-		Public plcTag_BracketConveyorLocationStat As String
+		Public plcTag_BracketDialTableLocationX As String
+		Public plcTag_BracketDialTableLocationY As String
+		Public plcTag_BracketDialTableLocationR As String
+		Public plcTag_BracketDialTableLocationDone As String
+		Public plcTag_BracketDialTableLocationStat As String
 		'Location of Bracket on Glass
 		Public plcTag_BracketVerifyStart As String
 		Public plcTag_BracketVerifyPass As String
 		Public plcTag_BracketVerifyFail As String
 		Public plcTag_BracketVerifyDone As String
-		'bracket Tape Verification
-		Public plcTag_BracketTapeStart As String
-		Public plcTag_BracketTapePass As String
-		Public plcTag_BracketTapeFail As String
-		Public plcTag_BracketTapeDone As String
-		'Glue
-		Public plcTag_LaserGluePass As String
-		Public plcTag_LaserGlueFail As String
 		'Lighting
 		Public plcTag_OverLight As String
 		Public plcTag_Backlight As String
@@ -150,11 +142,6 @@ Module mVars
 		Public plcTag_HPrimerPass As String
 		Public plcTag_HPrimerFail As String
 		Public plcTag_HPrimerDone As String
-		'Bracket Primer Check
-		Public plcTag_BracketPrimerStart As String
-		Public plcTag_BracketPrimerDone As String
-		Public plcTag_BracketPrimerPassed As String
-		Public plcTag_BracketPrimerFail As String
 	End Structure
 
 	Public DebugValue As String
@@ -266,11 +253,12 @@ Module mVars
 		Driver = 1
 		Center = 2
 		Passenger = 3
-		BracketAtConveyor = 4
+		BracketAtDialTable = 4
 		GoCator = 5
 		BracketTape = 6
 		BracketVerify = 7
 		BracketPrimer = 8
 	End Enum
+
 
 End Module

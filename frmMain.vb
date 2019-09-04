@@ -1,9 +1,10 @@
 Option Strict Off
 Option Explicit On
-Imports System.ComponentModel
-Imports VB = Microsoft.VisualBasic
-Imports System.IO
 Imports System.Collections.Generic
+Imports System.ComponentModel
+Imports System.IO
+Imports VB = Microsoft.VisualBasic
+Imports HSDISPLAYLib
 
 Public Class frmMain
 	Inherits Windows.Forms.Form
@@ -12,7 +13,7 @@ Public Class frmMain
 	'
 	'General module level variables
 	Public CurrentFilePath As String 'PartsPath + PartName
-	Public VisionDatabasePath As String = Application.StartupPath + "\..\..\Config Data\Vision.cfg"	'App.Path + "\..\Config Data\Vision.cfg"
+	Public VisionDatabasePath As String = Application.StartupPath + "\..\..\Config Data\Vision.cfg" 'App.Path + "\..\Config Data\Vision.cfg"
 	Public CalibrationPath As String = Application.StartupPath + "\..\..\Config Data\"
 	Public GoVisionDatabasePath As String = Application.StartupPath + "\..\..\Config Data\Gocator.cfg" 'App.Path + "\..\Config Data\Vision.cfg"
 	Private CalibratePath As String = ConfigPath + "Calibration.cal"
@@ -52,7 +53,6 @@ Public Class frmMain
 	Public HelperCamDriver As New SnapshotHelper
 	Public HelperCamCenter As New SnapshotHelper
 	Public HelperCamPassenger As New SnapshotHelper
-	Public HelperCamTapePrimer As New SnapshotHelper
 
 	Private VisionSuccess As Boolean
 	Public SaveImagePath As String
@@ -118,7 +118,7 @@ Public Class frmMain
 			DelayTimer(250)
 			GetSettings()
 			frmSplash.lblStatus.Text = "Starting PLC Communication"
-			Init_PLC()
+			UpdatePLCTags()
 			DelayTimer(250)
 			frmSplash.lblStatus.Text = "Initializing Cameras"
 			Application.DoEvents()
@@ -152,10 +152,10 @@ Public Class frmMain
 			TabControlsMain.SelectedTab = tabPageBracketLocate
 			frmSplash.lblStatus.Text = "Snapping Images"
 			Application.DoEvents()
-			'TODO
+			'TODO Uncomment Snaps
 			'Snap some pictures
 			'Snap(Camera.LocateGlass)
-			Snap(Camera.BracketAtConveyor)
+			Snap(Camera.BracketAtDialTable)
 			'Snap(Camera.BracketTape)
 			'Snap(Camera.BracketVerify)
 			'Snap(Camera.BracketPrimer)
@@ -242,7 +242,7 @@ Public Class frmMain
 				CurrentVisionTab = 6
 			Case tabpageBracketLocateAtConveyor.Name
 				TabControlsMain.Size = New Point(1554, 958)
-				CurrentVisionTab = Camera.BracketAtConveyor
+				CurrentVisionTab = Camera.BracketAtDialTable
 			Case tabPageCenterBracketVerify.Name
 				TabControlsMain.Size = New Point(1554, 958)
 				CurrentVisionTab = Camera.BracketVerify
@@ -554,11 +554,6 @@ Public Class frmMain
 						If Not Success Then ShowVBErrors("InitCameraSettings", "Unable To Set Camera Exposure " & Err.Description)
 						Success = HelperCamPassenger.SetSimpleFeature("gain", CSng(updnContrastPassenger.Value), i)
 						If Not Success Then ShowVBErrors("InitCameraSettings", "Unable To Set Camera Contrast " & Err.Description)
-					Case 5
-						Success = HelperCamTapePrimer.SetSimpleFeature("exposure", CSng(updnExposureBracketPrimer.Value), i)
-						If Not Success Then ShowVBErrors("InitCameraSettings", "Unable To Set Camera Exposure " & Err.Description)
-						Success = HelperCamTapePrimer.SetSimpleFeature("gain", CSng(updnContrastBracketPrimer.Value), i)
-						If Not Success Then ShowVBErrors("InitCameraSettings", "Unable To Set Camera Contrast " & Err.Description)
 				End Select
 			Next i
 		Catch ex As Exception
@@ -567,17 +562,15 @@ Public Class frmMain
 	End Sub
 
 	Private Function InitCameras() As Boolean
-		Dim CamIDBracket, CamIDDriver, CamIDCenter, CamIDPassenger, CamIDTapePrimer As Integer
+		Dim CamIDBracket, CamIDDriver, CamIDCenter, CamIDPassenger As Integer
 		CamIDBracket = CInt(frmDataBase.GetValue("Settings", "Value", "Camera Bracket"))
 		CamIDDriver = CInt(frmDataBase.GetValue("Settings", "Value", "Camera Driver"))
 		CamIDCenter = CInt(frmDataBase.GetValue("Settings", "Value", "Camera Center"))
 		CamIDPassenger = CInt(frmDataBase.GetValue("Settings", "Value", "Camera Passenger"))
-		CamIDTapePrimer = CInt(frmDataBase.GetValue("Settings", "Value", "Camera PrimerTape"))
 		HelperCamBracket.CameraId = CamIDBracket
 		HelperCamDriver.CameraId = CamIDDriver
 		HelperCamCenter.CameraId = CamIDCenter
 		HelperCamPassenger.CameraId = CamIDPassenger
-		HelperCamTapePrimer.CameraId = CamIDTapePrimer
 		Dim InitFail As Boolean = False
 		Try
 			For i As Int16 = 1 To NumCams
@@ -591,7 +584,8 @@ Public Class frmMain
 							frmSplash.lblStatus.Text = "Bracket Camera Initialized"
 						Else
 							InitFail = True
-							'TODO MsgBox("Could Not Initialize the Bracket Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
+							'TODO  Uncomment msgbox
+							'MsgBox("Could Not Initialize the Bracket Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
 						End If
 					Case 2
 						Application.DoEvents()
@@ -602,7 +596,8 @@ Public Class frmMain
 							frmSplash.lblStatus.Text = "Driver Camera Initialized"
 						Else
 							InitFail = True
-							'TODO MsgBox("Could Not Initialize the Driver Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
+							'TODO  Uncomment msgbox
+							'MsgBox("Could Not Initialize the Driver Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
 						End If
 					Case 3
 						Application.DoEvents()
@@ -613,7 +608,8 @@ Public Class frmMain
 							frmSplash.lblStatus.Text = "Center Camera Initialized"
 						Else
 							InitFail = True
-							'TODO MsgBox("Could Not Initialize the Center Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
+							'TODO  Uncomment msgbox
+							'MsgBox("Could Not Initialize the Center Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
 						End If
 					Case 4
 						Application.DoEvents()
@@ -624,18 +620,8 @@ Public Class frmMain
 							frmSplash.lblStatus.Text = "Passenger Camera Initialized"
 						Else
 							InitFail = True
-							'TODO MsgBox("Could Not Initialize the Passenger Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
-						End If
-					Case 5
-						Application.DoEvents()
-						frmSplash.lblStatus.Text = "Initializing Primer/Tape Camera"
-						If HelperCamTapePrimer.InitCamera() Then
-							InitSuccessPrimerTape = True
-							Application.DoEvents()
-							frmSplash.lblStatus.Text = "Primer/Tape  Camera Initialized"
-						Else
-							InitFail = True
-							'TODO MsgBox("Could Not Initialize the Primer/Tape Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
+							'TODO Uncomment msgbox
+							'MsgBox("Could Not Initialize the Passenger Camera ", MsgBoxStyle.Critical, "Camera Assignment Error")
 						End If
 					Case Else
 						Return False
@@ -663,14 +649,10 @@ Public Class frmMain
 					Success = HelperCamCenter.GetSnapshot(ImageCenter)
 				Case Camera.Passenger
 					Success = HelperCamPassenger.GetSnapshot(ImagePassenger)
-				Case Camera.BracketAtConveyor
+				Case Camera.BracketAtDialTable
 					Success = HelperCamBracket.GetSnapshot(ImageBracketConveyor)
 				Case Camera.BracketVerify
 					Success = HelperCamCenter.GetSnapshot(ImageBracketVerify)
-				Case Camera.BracketPrimer
-					Success = HelperCamTapePrimer.GetSnapshot(ImageBracketPrimer)
-				Case Camera.BracketTape
-					Success = HelperCamTapePrimer.GetSnapshot(ImageBracketTape)
 			End Select
 			If Not Success Then AcquisitionError(Side)
 		Catch ex As Exception
@@ -695,7 +677,7 @@ Public Class frmMain
 					ImageCenter.Load(ConfigPath & "NoImage.bmp")
 				Case Camera.Passenger
 					ImagePassenger.Load(ConfigPath & "NoImage.bmp")
-				Case Camera.BracketAtConveyor
+				Case Camera.BracketAtDialTable
 					ImagePassenger.Load(ConfigPath & "NoImage.bmp")
 				Case Camera.BracketVerify
 					ImagePassenger.Load(ConfigPath & "NoImage.bmp")
@@ -756,7 +738,7 @@ Public Class frmMain
 					Side = Camera.LocateGlass
 				Case btnTrainNewBracketconveyor.Name
 					TextString = "Bracket At Conveyor model"
-					Side = Camera.BracketAtConveyor
+					Side = Camera.BracketAtDialTable
 				Case btnTrainNewBracketTape.Name
 					Side = Camera.BracketTape
 					TextString = "Bracket Tape Inspection model"
@@ -851,7 +833,7 @@ Public Class frmMain
 				Case btnTrainExistingLocateGlass.Name
 					Side = Camera.LocateGlass
 				Case btnTrainExistingBracketConveyor.Name
-					Side = Camera.BracketAtConveyor
+					Side = Camera.BracketAtDialTable
 				Case btnTrainExistingBracketTape.Name
 					Side = Camera.BracketTape
 				Case btnTrainExistingCenter.Name
@@ -928,34 +910,15 @@ Public Class frmMain
 						If chkSnapRepeatBrackeyVerify.Checked Then DelayTimer(200)
 					Loop While chkSnapRepeatBrackeyVerify.Checked
 				Case btnSnapBracketConveyor.Name
-					HelperCamBracket.SetSimpleFeature("exposure", updnExposureBracketConveyor.Value, Camera.BracketAtConveyor)
-					HelperCamBracket.SetSimpleFeature("gain", updnContrastBracketConveyor.Value, Camera.BracketAtConveyor)
-					Snap(Camera.BracketAtConveyor)
+					HelperCamBracket.SetSimpleFeature("exposure", updnExposureBracketConveyor.Value, Camera.BracketAtDialTable)
+					HelperCamBracket.SetSimpleFeature("gain", updnContrastBracketConveyor.Value, Camera.BracketAtDialTable)
+					Snap(Camera.BracketAtDialTable)
 					Do
 						Application.DoEvents()
-						Snap(Camera.BracketAtConveyor)
+						Snap(Camera.BracketAtDialTable)
 						Application.DoEvents()
 						If chkSnapRepeatBracketconveyor.Checked Then DelayTimer(200)
 					Loop While chkSnapRepeatBracketconveyor.Checked
-				Case btnSnapBracketTape.Name
-					Try
-						HelperCamTapePrimer.SetSimpleFeature("exposure", updnExposureBracketTape.Value, Camera.BracketTape)
-						HelperCamTapePrimer.SetSimpleFeature("gain", updnContrastBracketTape.Value, Camera.BracketTape)
-						HSDisplayBracketTape.RemoveAllMarker()
-						'remove all the blobs
-						HSDisplayBracketTape.set_ImagePalette(1, HSDISPLAYLib.hsImagePalette.hsPaletteNone)
-						HSDisplayBracketTape.set_ImagePalette(2, HSDISPLAYLib.hsImagePalette.hsPaletteNone)
-						HSDisplayBracketTape.set_ImagePalette(3, HSDISPLAYLib.hsImagePalette.hsPaletteNone)
-						HSDisplayBracketTape.set_ImagePalette(4, HSDISPLAYLib.hsImagePalette.hsPaletteNone)
-						Do
-							Application.DoEvents()
-							Snap(Camera.BracketTape)
-							Application.DoEvents()
-							If chkSnapRepeatBracketTape.Checked Then DelayTimer(200)
-						Loop While chkSnapRepeatBracketTape.Checked
-					Catch ex As Exception
-						'asdf
-					End Try
 				Case btnSnapDriver.Name
 					Do
 						Application.DoEvents()
@@ -1030,22 +993,18 @@ Public Class frmMain
 			button = DirectCast(sender, Button)
 			Select Case button.Name
 				Case btnMainRunBracketInspectionConveyor.Name
-					PLC_Bracket_Conveyor_Location()
+					PLC_Bracket_DialTable_Location()
 				Case btnMainRunGlassInspection.Name
 					PLC_Glass_Location()
 				Case btnMainRunBracketVerify.Name
 					PLC_Glass_Location()
 					PLC_Vision_Camera_Verify()
-				Case btnMainRunBracketInspectionTape.Name
-					PLC_Bracket_Tape()
-				Case btnMainRunBracketInspectionPrimer.Name
-					PLC_Bracket_Primer()
 				Case btnMainRunDriverInspec.Name
-					PLC_Check_Primer(button.Name)
+					PLC_Check_Glass_Primer(button.Name)
 				Case btnMainRunCenterInspec.Name
 					PLC_Check_H_Primer()
 				Case btnMainRunPassengerInspec.Name
-					PLC_Check_Primer(button.Name)
+					PLC_Check_Glass_Primer(button.Name)
 				Case btnMainRunTrademark.Name
 					PLC_DriverCLX.Write("Vis_Cam_TM.Start", 1)
 			End Select
@@ -1147,9 +1106,9 @@ Public Class frmMain
 															"through the Hexsight Interface" & vbCr &
 															ex.Message, MsgBoxStyle.Critical + MsgBoxStyle.SystemModal)
 				End Try
-			Case Camera.BracketAtConveyor
+			Case Camera.BracketAtDialTable
 				Try
-					HSModel = HSLoc(Camera.BracketAtConveyor).ShowModelEditor(False, "Bracket Conveyor Locate")
+					HSModel = HSLoc(Camera.BracketAtDialTable).ShowModelEditor(False, "Bracket Conveyor Locate")
 					With HSModel
 						Try
 							.ReferencePointPositionX(0) = 0
@@ -1160,8 +1119,8 @@ Public Class frmMain
 					HSModel.Apply()
 					HSModel.EndDialog(HSLOCATORLib.hsModelDialogResult.hsResultOK)
 					'Save Model Database
-					HSLoc(Camera.BracketAtConveyor).SaveModelDatabase(ConfigPath & "Bracket Conveyor Locate.hdb")
-					HSLoc(Camera.BracketAtConveyor).CompactMemory()
+					HSLoc(Camera.BracketAtDialTable).SaveModelDatabase(ConfigPath & "Bracket Conveyor Locate.hdb")
+					HSLoc(Camera.BracketAtDialTable).CompactMemory()
 					'
 				Catch ex As Exception
 					MsgBox("Problem modifying the model file reference point" & vbCr &
@@ -1215,8 +1174,6 @@ Public Class frmMain
 															"through the Hexsight Interface" & vbCr &
 															ex.Message, MsgBoxStyle.Critical + MsgBoxStyle.SystemModal)
 				End Try
-
-
 		End Select
 	End Sub
 
@@ -1231,9 +1188,9 @@ Public Class frmMain
 						Description = Description & HSLoc(Camera.LocateGlass).MessageDescription(MessageID) & vbCr
 					Next MessageID
 					MsgBox(Description, MsgBoxStyle.OkOnly Or MsgBoxStyle.SystemModal)
-				Case Camera.BracketAtConveyor
-					For MessageID = 0 To HSLoc(Camera.BracketAtConveyor).MessageCount - 1
-						Description = Description & HSLoc(Camera.BracketAtConveyor).MessageDescription(MessageID) & vbCr
+				Case Camera.BracketAtDialTable
+					For MessageID = 0 To HSLoc(Camera.BracketAtDialTable).MessageCount - 1
+						Description = Description & HSLoc(Camera.BracketAtDialTable).MessageDescription(MessageID) & vbCr
 					Next MessageID
 					MsgBox(Description, MsgBoxStyle.OkOnly Or MsgBoxStyle.SystemModal)
 				Case Camera.BracketTape
@@ -1278,7 +1235,7 @@ Public Class frmMain
 			Case btnSearchSettingsLocateGlass.Name
 				HSLoc(Camera.LocateGlass).ShowProperties(True, , 1 + 4 + 8 + 16)
 			Case btnSearchSettingsBracketConveyor.Name
-				HSLoc(Camera.BracketAtConveyor).ShowProperties(True, , 1 + 4 + 8 + 16)
+				HSLoc(Camera.BracketAtDialTable).ShowProperties(True, , 1 + 4 + 8 + 16)
 			Case btnSearchSettingsBracketTape.Name
 				HSLoc(Camera.BracketTape).ShowProperties(True, , 1 + 4 + 8 + 16)
 			Case btnSearchSettingsCenter.Name
@@ -1335,7 +1292,7 @@ Public Class frmMain
 			CamLocation(Camera.Driver) = "Driver Locate"
 			CamLocation(Camera.Center) = "Center Locate"
 			CamLocation(Camera.Passenger) = "Passenger Locate"
-			CamLocation(Camera.BracketAtConveyor) = "Bracket Conveyor Locate"
+			CamLocation(Camera.BracketAtDialTable) = "Bracket Conveyor Locate"
 			CamLocation(Camera.BracketTape) = "Bracket Tape Locate"
 			CamLocation(Camera.BracketVerify) = "Bracket Verify"
 			CamLocation(Camera.BracketPrimer) = "Bracket Primer Locate"
@@ -1345,7 +1302,7 @@ Public Class frmMain
 			ConfigName(Camera.Driver) = "Driver Side Blob Config"
 			ConfigName(Camera.Center) = "Center Side Blob Config"
 			ConfigName(Camera.Passenger) = "Passenger Side Blob Config"
-			ConfigName(Camera.BracketAtConveyor) = "Bracket Conveyor Locate"
+			ConfigName(Camera.BracketAtDialTable) = "Bracket Conveyor Locate"
 			ConfigName(Camera.BracketTape) = "Bracket Conveyor Tape Inspection"
 
 			ConfigName(Camera.BracketVerify) = "Center Bracket Verification"
@@ -1358,9 +1315,7 @@ Public Class frmMain
 			HSLoc(Camera.Driver) = HSApp.ProcessManager.Process("Driver Locate")
 			HSLoc(Camera.Center) = HSApp.ProcessManager.Process("Center Locate")
 			HSLoc(Camera.Passenger) = HSApp.ProcessManager.Process("Passenger Locate")
-			HSLoc(Camera.BracketAtConveyor) = HSApp.ProcessManager.Process("Bracket Conveyor Locate")
-			HSLoc(Camera.BracketTape) = HSApp.ProcessManager.Process("Bracket Tape Locate")
-			HSLoc(Camera.BracketPrimer) = HSApp.ProcessManager.Process("Bracket Primer Locate")
+			HSLoc(Camera.BracketAtDialTable) = HSApp.ProcessManager.Process("Bracket Conveyor Locate")
 			'
 			Success = InitVisionDisplay()
 			'
@@ -1392,8 +1347,8 @@ Public Class frmMain
 			With HSDisplayBracketConveyor
 				.Parent = grpHSDisplayBracketConveyor
 				.set_ImageName(0, ImageBracketConveyor.Name)
-				.set_SceneViewName(0, HSLoc(Camera.BracketAtConveyor).OutputDetailSceneView)
-				.set_SceneViewName(1, HSLoc(Camera.BracketAtConveyor).OutputInstanceSceneView)
+				.set_SceneViewName(0, HSLoc(Camera.BracketAtDialTable).OutputDetailSceneView)
+				.set_SceneViewName(1, HSLoc(Camera.BracketAtDialTable).OutputInstanceSceneView)
 				.set_SceneName(2, "Instance Scene")
 				.set_ScenePenWidth(0, HSDISPLAYLib.hsPenWidth.hsPenWidthThin)
 				.set_ScenePenWidth(1, HSDISPLAYLib.hsPenWidth.hsPenWidthThin)
@@ -1401,34 +1356,6 @@ Public Class frmMain
 				.Top = 0
 				.Width = grpHSDisplayBracketConveyor.Width
 				.Height = grpHSDisplayBracketConveyor.Height
-				.CalibratedUnitsEnabled = True
-			End With
-			With HSDisplayBracketPrimer
-				.Parent = grpHSDisplayBracketPrimer
-				.set_ImageName(0, ImageBracketPrimer.Name)
-				.set_SceneViewName(0, HSLoc(Camera.BracketPrimer).OutputDetailSceneView)
-				.set_SceneViewName(1, HSLoc(Camera.BracketPrimer).OutputInstanceSceneView)
-				.set_SceneName(2, "Instance Scene")
-				.set_ScenePenWidth(0, HSDISPLAYLib.hsPenWidth.hsPenWidthThin)
-				.set_ScenePenWidth(1, HSDISPLAYLib.hsPenWidth.hsPenWidthThin)
-				.Left = 0
-				.Top = 0
-				.Width = grpHSDisplayBracketPrimer.Width
-				.Height = grpHSDisplayBracketPrimer.Height
-				.CalibratedUnitsEnabled = True
-			End With
-			With HSDisplayBracketTape
-				.Parent = grpHSDisplayBracketTape
-				.set_ImageName(0, ImageBracketTape.Name)
-				.set_SceneViewName(0, HSLoc(Camera.BracketTape).OutputDetailSceneView)
-				.set_SceneViewName(1, HSLoc(Camera.BracketTape).OutputInstanceSceneView)
-				.set_SceneName(2, "Instance Scene")
-				.set_ScenePenWidth(0, HSDISPLAYLib.hsPenWidth.hsPenWidthThin)
-				.set_ScenePenWidth(1, HSDISPLAYLib.hsPenWidth.hsPenWidthThin)
-				.Left = 0
-				.Top = 0
-				.Width = grpHSDisplayBracketTape.Width
-				.Height = grpHSDisplayBracketTape.Height
 				.CalibratedUnitsEnabled = True
 			End With
 			With HSDisplayCenterBracketVerify
@@ -1523,8 +1450,8 @@ Public Class frmMain
 			End If
 			'
 			Select Case Side
-				Case Camera.BracketAtConveyor
-					Calibrate = HSAcq.ShowCalibDistortionModelDialog(True, ConfigName(Camera.BracketAtConveyor))
+				Case Camera.BracketAtDialTable
+					Calibrate = HSAcq.ShowCalibDistortionModelDialog(True, ConfigName(Camera.BracketAtDialTable))
 					With Calibrate
 						.DotPitch = 20
 						.WorldCoordinateSystemType = HSACQUISITIONDEVICELib.hsCoordinateSystemType.hsRightHanded
@@ -1536,7 +1463,7 @@ Public Class frmMain
 					End With
 					Yes = MsgBox("Do you wish to save this calibration to disk?", MsgBoxStyle.YesNo)
 					If Yes = MsgBoxResult.Yes Then
-						HSAcq.SaveCalibration(ConfigName(Camera.BracketAtConveyor), CalibrationPath & "Bracket.Cal")
+						HSAcq.SaveCalibration(ConfigName(Camera.BracketAtDialTable), CalibrationPath & "Bracket.Cal")
 						HSAcq.LoadCalibration(ConfigName(Camera.BracketTape), CalibrationPath & "Bracket.cal") 'load into second display
 						HSAcq.LoadCalibration(ConfigName(Camera.BracketPrimer), CalibrationPath & "Bracket.cal") 'load into second display
 						SaveHexsight()
@@ -1646,7 +1573,7 @@ Public Class frmMain
 					Loop While chkLocatePassenger.Checked
 				Case btnLocateBracketConveyor.Name
 					Do
-						Locate(Camera.BracketAtConveyor, True)
+						Locate(Camera.BracketAtDialTable, True)
 						If chkLocateBracketConveyor.Checked Then DelayTimer(1000)
 					Loop While chkLocateBracketConveyor.Checked
 				Case btnLocateBracketTape.Name
@@ -1663,16 +1590,6 @@ Public Class frmMain
 						Locate(Camera.BracketVerify, True)
 						If chkLocateGlassVerify.Checked Then DelayTimer(1000)
 					Loop While chkLocateGlassVerify.Checked
-				Case btnLocateBracketPrimer.Name
-					HelperCamTapePrimer.SetSimpleFeature("exposure", updnExposureBracketPrimer.Value, Camera.BracketPrimer)
-					HelperCamTapePrimer.SetSimpleFeature("gain", updnContrastBracketPrimer.Value, Camera.BracketPrimer)
-					HelperCamTapePrimer.SetSimpleFeature("exposure", updnExposureBracketPrimer.Value, Camera.BracketPrimer)
-					HelperCamTapePrimer.SetSimpleFeature("gain", updnContrastBracketPrimer.Value, Camera.BracketPrimer)
-					Do
-						Locate(Camera.BracketPrimer, True)
-						If chkLocateBracketPrimer.Checked Then DelayTimer(1000)
-					Loop While chkLocateBracketPrimer.Checked
-					'Locate only using origional image
 				Case btnLocateOnlyLocateGlass.Name
 					Do
 						Locate(Camera.LocateGlass, False)
@@ -1690,7 +1607,7 @@ Public Class frmMain
 					Loop While chkLocateDriver.Checked
 				Case btnLocateOnlyBracketConveyor.Name
 					Do
-						Locate(Camera.BracketAtConveyor, False)
+						Locate(Camera.BracketAtDialTable, False)
 						If chkLocateBracketConveyor.Checked Then DelayTimer(1000)
 					Loop While chkLocateBracketConveyor.Checked
 				Case btnLocateOnlyBracketTape.Name
@@ -1736,122 +1653,6 @@ Public Class frmMain
 					btnLocateOnlyLocateGlass.Enabled = True
 					HSDisplayLocateGlass.Refresh()
 					lblVisionPoseTimeBracket.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
-					'
-					'Locate Tape on Bracket
-				Case Camera.BracketTape
-					If NewPicture Then Snap(Side)
-					StartTimer = VB.Timer
-					Find(Side)
-					If CheckBlob Then
-						TapeCoverArea(1) = Blob(Camera.BracketTape, "Tape Cover Blob Top Left", "Bracket Tape Locate", 0, 5)
-						TapeCoverArea(2) = Blob(Camera.BracketTape, "Tape Cover Blob Top Right", "Bracket Tape Locate", 0, 6)
-						TapeCoverArea(3) = Blob(Camera.BracketTape, "Tape Cover Blob Bottom Left", "Bracket Tape Locate", 0, 7)
-						TapeCoverArea(4) = Blob(Camera.BracketTape, "Tape Cover Blob Bottom Right", "Bracket Tape Locate", 0, 8)
-
-						'Top Left Tape Cover
-						If (CInt(lblCoverAreaTopLeft.Text) < updnCoverMaxAreaTopLeft.Value) Then
-							lblCoverAreaTopLeft.BackColor = SystemColors.Control
-							CurrentTapeArea(5) = True
-						Else
-							lblCoverAreaTopLeft.BackColor = Color.Red
-							CurrentTapeArea(5) = False
-						End If
-						'Top Right Tape Cover
-						If (CInt(lblCoverAreaTopRight.Text) < updnCoverMaxAreaTopRight.Value) Then
-							lblCoverAreaTopRight.BackColor = SystemColors.Control
-							CurrentTapeArea(6) = True
-						Else
-							lblCoverAreaTopRight.BackColor = Color.Red
-							CurrentTapeArea(6) = False
-						End If
-						'Bottom Left Tape Cover
-						If (CInt(lblCoverAreaBottomLeft.Text) < updnCoverMaxAreaBottomLeft.Value) Then
-							lblCoverAreaBottomLeft.BackColor = SystemColors.Control
-							CurrentTapeArea(7) = True
-						Else
-							lblCoverAreaBottomLeft.BackColor = Color.Red
-							CurrentTapeArea(7) = False
-						End If
-						'Bottom Right Tape Cover
-						If (CInt(lblCoverAreaBottomRight.Text) < updnCoverMaxAreaBottomRight.Value) Then
-							lblCoverAreaBottomRight.BackColor = SystemColors.Control
-							CurrentTapeArea(8) = True
-						Else
-							lblCoverAreaBottomRight.BackColor = Color.Red
-							CurrentTapeArea(8) = False
-						End If
-						If (CurrentTapeArea(5) And CurrentTapeArea(6) And CurrentTapeArea(7) And CurrentTapeArea(8)) = False Then
-							lblVisionMessageBracketTape.Text = "Tape Cover has NOT been Removed"
-							lblVisionMessageBracketTape.BackColor = Color.Red
-						End If
-						'
-						'
-						'
-						'
-						'Adhesive 1 through 4
-						For i As Int16 = 1 To 4
-							TapeBlobArea(i) = Blob(Camera.BracketTape, "Bracket Tape Blob " & i, "Bracket Tape Locate", 0, i)
-							If TapeBlobArea(i) > 0 Then
-								Dim Variance As Int32
-								Select Case i
-									Case 1
-										Variance = updnTapeMinAreaTopLeft.Value
-									Case 2
-										Variance = updnTapeMinAreaTopRight.Value
-									Case 3
-										Variance = updnTapeMinAreaBottomLeft.Value
-									Case 4
-										Variance = updnTapeMinAreaBottomRight.Value
-								End Select
-								If (TapeBlobArea(i) > Variance) Then
-									Select Case i
-										Case 1
-											lblTapeAreaTopLeft.BackColor = SystemColors.Control
-										Case 2
-											lblTapeAreaTopRight.BackColor = SystemColors.Control
-										Case 3
-											lblTapeAreaBottomLeft.BackColor = SystemColors.Control
-										Case 4
-											lblTapeAreaBottomRight.BackColor = SystemColors.Control
-									End Select
-									If lblVisionMessageBracketTape.BackColor <> Color.Red Then lblVisionMessageBracketTape.BackColor = Color.YellowGreen
-									CurrentTapeArea(i) = True
-								Else
-									Select Case i
-										Case 1
-											lblTapeAreaTopLeft.BackColor = Color.Red
-										Case 2
-											lblTapeAreaTopRight.BackColor = Color.Red
-										Case 3
-											lblTapeAreaBottomLeft.BackColor = Color.Red
-										Case 4
-											lblTapeAreaBottomRight.BackColor = Color.Red
-									End Select
-									lblVisionMessageBracketTape.Text = "Blob Area is out of spec."
-									lblVisionMessageBracketTape.BackColor = Color.Red
-									CurrentTapeArea(i) = False
-								End If
-							Else
-								Select Case i
-									Case 1
-										lblTapeAreaTopLeft.BackColor = Color.Red
-									Case 2
-										lblTapeAreaTopRight.BackColor = Color.Red
-									Case 3
-										lblTapeAreaBottomLeft.BackColor = Color.Red
-									Case 4
-										lblTapeAreaBottomRight.BackColor = Color.Red
-								End Select
-								lblVisionMessageBracketTape.Text = "No valid Blob detected."
-								lblVisionMessageBracketTape.BackColor = Color.Red
-								CurrentTapeArea(i) = False
-							End If
-						Next
-					End If
-					btnLocateBracketTape.Enabled = True
-					btnLocateOnlyBracketTape.Enabled = True
-					HSDisplayBracketTape.Refresh()
-					lblVisionTapeTimeData.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
 					'
 					'Locate Arron Mighty on Driver
 				Case Camera.Driver
@@ -1935,12 +1736,12 @@ Public Class frmMain
 					HSDisplayPassenger.Refresh()
 					lblVisionPoseTimePassenger.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
 					'
-					'Locate Bracket at Conveyor
-				Case Camera.BracketAtConveyor
+					'Locate Bracket at Dial Table
+				Case Camera.BracketAtDialTable
 					ClearPositionData(1)
 					btnLocateBracketConveyor.Enabled = False
 					btnLocateOnlyBracketConveyor.Enabled = False
-					If NewPicture Then Snap(Camera.BracketAtConveyor)
+					If NewPicture Then Snap(Camera.BracketAtDialTable)
 					StartTimer = VB.Timer
 					Find(Side)
 					btnLocateBracketConveyor.Enabled = True
@@ -1968,6 +1769,7 @@ Public Class frmMain
 					lblTopRighttDifference.Text = FormatNumber(TopRightDiff, 1)
 					Try
 						If mnuSaveVerification.Checked Then
+							'TODO clean up or replace this HTML code. we dont need multiple colors and font sizes.
 							If File.Exists("E:\Reports\Verification.htm") Then
 								Dim FileText As String
 								FileText = "<tr><center><font color=black><b><td><center>" & Date.Now & "</td></center><center><td>" & PartName & "</center></td>" & "<td><center>" & FormatNumber(RefVerify0.Y - RefLocate0.Y, 2) & "</center></td>" & "<td><center>" & FormatNumber(RefVerify1.Y - RefLocate1.Y, 2) & "</center></td>" & "<td><center>" & FormatNumber(RefLocate2.X - RefVerify2.X, 2) & "</center></td><b></font></tr>"
@@ -2026,85 +1828,6 @@ Public Class frmMain
 					btnLocateOnlyBracketVerify.Enabled = True
 					HSDisplayCenterBracketVerify.Refresh()
 					lblVisionPoseTimeBracketVerify.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
-					'
-					'Locate Primer on Bracket
-				Case Camera.BracketPrimer
-					'ClearPositionData(1)
-					btnLocateBracketPrimer.Enabled = False
-					btnLocateOnlyBracketPrimer.Enabled = False
-					If NewPicture Then Snap(Camera.BracketPrimer)
-					StartTimer = VB.Timer
-					For i As Int16 = 0 To 4
-						HSBlob = HSApp.ProcessManager.Process("Bracket Primer Blob " & i + 1)   'remove current blobs
-						HSBlob.OutputBlobImageEnabled = False
-					Next
-					For i As Int16 = 0 To 4
-						HSBlob = HSApp.ProcessManager.Process("Bracket Primer Blob " & i + 1)   'renable blob output
-						HSBlob.OutputBlobImageEnabled = True
-					Next
-					Find(Side) 'find and snap once
-					If CheckBlob Then
-						BracketPrimer(5) = Blob(Camera.BracketPrimer, "Bracket Primer Blob Reference", "Bracket Primer Locate", 6) 'reference mark
-						lblBracketPrimerMeanValue.Text = "Reference Mean Value: " & FormatNumber(BracketPrimer(5), 2)
-						For index As Int16 = 0 To 4
-							Select Case index
-								Case 0
-									BlobDeviation = updnBracketPrimer1Deviation.Value
-								Case 1
-									BlobDeviation = updnBracketPrimer2Deviation.Value
-								Case 2
-									BlobDeviation = updnBracketPrimer3Deviation.Value
-								Case 3
-									BlobDeviation = updnBracketPrimer4Deviation.Value
-								Case 4
-									BlobDeviation = updnBracketPrimer5Deviation.Value
-							End Select
-							BracketPrimer(index) = Blob(Camera.BracketPrimer, "Bracket Primer Blob " & index + 1, "Bracket Primer Locate", index + 1)
-							If BracketPrimer(index) <= BracketPrimer(5) + BlobDeviation Then ' if all the other locations mean grey value is greater then the reference it is good
-								'fail means dont match
-								Dim BlobName As String = "Bracket Primer Blob " & index + 1
-								'DisplayBlobRegions(BlobName)
-								Dim ErrorValue As String = "Error String"
-								HSApp.ProcessManager.Execute("Bracket Primer Locate", "Bracket Primer Locate")
-								HSApp.ProcessManager.Execute(BlobName, BlobName)
-								HSBlob = HSApp.ProcessManager.Process(BlobName)
-								Dim x, y, r, height, width As Integer
-								x = HSBlob.BlobPositionX(0)
-								y = HSBlob.BlobPositionY(0)
-								r = HSBlob.TransformRotation
-								width = HSBlob.ToolWidth
-								height = HSBlob.ToolHeight
-								HSDisplayBracketPrimer.AddRectangleMarker(BlobName, x, y, width, height, True) 'user drawable box
-								HSDisplayBracketPrimer.set_RectangleMarkerHeight(BlobName, height)
-								HSDisplayBracketPrimer.set_RectangleMarkerWidth(BlobName, width)
-								HSDisplayBracketPrimer.set_RectangleMarkerRotation(BlobName, r)
-								HSDisplayBracketPrimer.set_MarkerColor(BlobName, HSDISPLAYLib.hsColor.hsRed)
-								'HSDisplayBracketPrimer.set_RectangleMarkerConstraints(BlobName, HSDISPLAYLib.hsRectangleMarkerConstraints.hsRectangleNoConstraints)
-								HSDisplayBracketPrimer.RemoveMarker(BlobValu & index + 1)
-								HSDisplayBracketPrimer.AddLabelMarker(ErrorValue & index + 1, x - 5, y - 7, FormatNumber(HSBlob.BlobGreyLevelMean(0), 0), True)
-								HSDisplayBracketPrimer.set_MarkerColor(ErrorValue & index + 1, HSDISPLAYLib.hsColor.hsRed)
-								BracketPrimerFail = True
-								'Return False
-							End If
-						Next
-					End If
-					If Not BracketPrimerFail Then
-						lblBracketInspectionPrimer.BackColor = Color.YellowGreen
-						btnLocateBracketPrimer.Enabled = True
-						btnLocateOnlyBracketPrimer.Enabled = True
-						HSDisplayBracketPrimer.Refresh()
-						lblVisionPoseTimeBracketPrimer.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
-						BracketPrimerFail = False
-						Return True
-					Else
-						btnLocateBracketPrimer.Enabled = True
-						btnLocateOnlyBracketPrimer.Enabled = True
-						lblBracketInspectionPrimer.BackColor = Color.Red
-						HSDisplayBracketPrimer.Refresh()
-						lblVisionPoseTimeBracketPrimer.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
-						BracketPrimerFail = False
-						Return False
-					End If
 			End Select
 			If LocatorResults(Side).Status = 1 Then
 				Return True
@@ -2177,7 +1900,7 @@ Public Class frmMain
 					HSDisplayDriver.RefreshDisplay()
 					btnSnapPassenger.Enabled = True
 					lblCameraTimePassenger.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
-				Case Camera.BracketAtConveyor
+				Case Camera.BracketAtDialTable
 					Display = HSDisplayBracketConveyor
 					'  Display.RefreshDisplay()
 					'  HSDisplayBracketConveyor.Refresh()
@@ -2265,7 +1988,6 @@ Public Class frmMain
 	End Sub
 
 	Private Function Blob(ByVal Side As Int32, ByRef BlobName As String, Locator As String, Optional Blobindex As Int16 = 0, Optional BlobNum As Int16 = 1) As Integer
-		Dim x, y, r, height, width As Single
 		Try
 			HSApp.ProcessManager.Execute(Locator, Locator)
 			'HSApp.ProcessManager.Execute(BlobName, BlobName)
@@ -2442,14 +2164,6 @@ Public Class frmMain
 						lblVisionMessagePassenger.BackColor = Color.Red
 						Return 0
 					End Try
-				Case Camera.BracketPrimer
-					HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomLeft) = 0
-					HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopLeft) = 0
-					HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideBottomRight) = 255
-					HSBlob.SegmentationInside(HSBLOBANALYZERLib.hsSegmentationInsidePoint.hsInsideTopRight) = 255
-					HSBlob.OutputBlobImageEnabled = True
-					HSBlob.Execute()
-					DisplayBlobRegions(BlobName)
 			End Select
 			'verify that blob area is not equal to zero if so return a 0 
 			'count the number of blobs we have for the current image
@@ -2508,38 +2222,6 @@ Public Class frmMain
 								.set_ImageViewName(1, HSBlob.OutputBlobView)
 								.set_ImageName(1, HSBlob.OutputBlobImage)
 							End With
-						Case Camera.BracketPrimer
-							If Blobindex < 6 Then
-								x = HSBlob.BlobPositionX(0) ' + HSBlob.TransformTranslationX 'find the current X of the tool and start out box there
-								y = HSBlob.BlobPositionY(0) '+ HSBlob.TransformTranslationY
-								r = HSBlob.TransformRotation
-								width = HSBlob.ToolWidth
-								height = HSBlob.ToolHeight
-								HSDisplayBracketPrimer.AddRectangleMarker(BlobName, x, y, width, height, True) 'user drawable box
-								HSDisplayBracketPrimer.set_RectangleMarkerHeight(BlobName, height)
-								HSDisplayBracketPrimer.set_RectangleMarkerWidth(BlobName, width)
-								HSDisplayBracketPrimer.set_RectangleMarkerRotation(BlobName, r)
-								HSDisplayBracketPrimer.set_MarkerColor(BlobName, HSDISPLAYLib.hsColor.hsGreen)
-								'HSDisplayBracketPrimer.set_RectangleMarkerConstraints(BlobName, HSDISPLAYLib.hsRectangleMarkerConstraints.hsRectangleNoConstraints)
-								HSDisplayBracketPrimer.AddLabelMarker("BlobValu" & Blobindex, x - 5, y - 7, FormatNumber(HSBlob.BlobGreyLevelMean(0), 0), True)
-								HSDisplayBracketPrimer.set_MarkerColor("BlobValu" & Blobindex, HSDISPLAYLib.hsColor.hsGreen)
-								Return HSBlob.BlobGreyLevelMean(0)
-							Else
-								x = HSBlob.BlobPositionX(0) ' + HSBlob.TransformTranslationX 'find the current X of the tool and start out box there
-								y = HSBlob.BlobPositionY(0) '+ HSBlob.TransformTranslationY
-								r = HSBlob.TransformRotation
-								width = HSBlob.ToolWidth
-								height = HSBlob.ToolHeight
-								HSDisplayBracketPrimer.AddRectangleMarker(BlobName, x, y, width, height, True) 'user drawable box
-								HSDisplayBracketPrimer.set_RectangleMarkerHeight(BlobName, height)
-								HSDisplayBracketPrimer.set_RectangleMarkerWidth(BlobName, width)
-								HSDisplayBracketPrimer.set_RectangleMarkerRotation(BlobName, r)
-								HSDisplayBracketPrimer.set_MarkerColor(BlobName, HSDISPLAYLib.hsColor.hsYellow)
-								'HSDisplayBracketPrimer.set_RectangleMarkerConstraints(BlobName, HSDISPLAYLib.hsRectangleMarkerConstraints.hsRectangleNoConstraints)
-								HSDisplayBracketPrimer.AddLabelMarker("BlobValu", x - 12, y - 7, "REF:" & FormatNumber(HSBlob.BlobGreyLevelMean(0), 0), True)
-								HSDisplayBracketPrimer.set_MarkerColor("BlobValu", HSDISPLAYLib.hsColor.hsYellow)
-								Return HSBlob.BlobGreyLevelMean(0)
-							End If
 					End Select
 				Next i
 				Dim RTvalue As Int64
@@ -2590,10 +2272,10 @@ Public Class frmMain
 						HSDisplayPassenger.set_ScenePenWidth(0, HSDISPLAYLib.hsPenWidth.hsPenWidthThin)
 						HSDisplayPassenger.set_ScenePenWidth(1, HSDISPLAYLib.hsPenWidth.hsPenWidthThin)
 						lblLocateTimePassenger.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
-					Case Camera.BracketAtConveyor 'use the same hsdisplay
+					Case Camera.BracketAtDialTable 'use the same hsdisplay
 						StartTimer = VB.Timer()
-						HSDisplayBracketConveyor.set_SceneViewName(0, HSLoc(Camera.BracketAtConveyor).OutputDetailSceneView)
-						HSDisplayBracketConveyor.set_SceneViewName(1, HSLoc(Camera.BracketAtConveyor).OutputInstanceSceneView)
+						HSDisplayBracketConveyor.set_SceneViewName(0, HSLoc(Camera.BracketAtDialTable).OutputDetailSceneView)
+						HSDisplayBracketConveyor.set_SceneViewName(1, HSLoc(Camera.BracketAtDialTable).OutputInstanceSceneView)
 						HSDisplayBracketConveyor.set_ScenePenWidth(0, HSDISPLAYLib.hsPenWidth.hsPenWidthThin)
 						HSDisplayBracketConveyor.set_ScenePenWidth(1, HSDISPLAYLib.hsPenWidth.hsPenWidthThin)
 						lblLocateTimeBracketconveyor.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
@@ -2652,7 +2334,7 @@ Public Class frmMain
 							Catch ex As Exception
 								ShowVBErrors("No Reference Markers", ex.Message)
 							End Try
-							UpdatePointMarkers(Side)
+							DrawPointMarkers(Side)
 							HSDisplayLocateGlass.RefreshMarkers()
 						Case Camera.BracketVerify
 							'save data 
@@ -2669,7 +2351,7 @@ Public Class frmMain
 							RefVerify2.X = HSLoc(Side).InstanceReferencePointPositionX(0, 2)
 							RefVerify2.Y = HSLoc(Side).InstanceReferencePointPositionY(0, 2)
 							CheckThresholds(Side)
-							UpdatePointMarkers(Side)
+							DrawPointMarkers(Side)
 							HSDisplayLocateGlass.RefreshMarkers()
 						Case Camera.Driver
 							lblVisionMessageDriver.Text = HSLoc(Side).MessageNumber(0) & " " & HSLoc(Side).MessageDescription(0)
@@ -2679,7 +2361,7 @@ Public Class frmMain
 							lblVisionPoseScoreDriver.Text = LocatorResults(Side).Score.ToString("N2")
 							lblVisionPoseFitDriver.Text = LocatorResults(Side).Fit.ToString("N2")
 							CheckThresholds(Side)
-							UpdatePointMarkers(Side)
+							DrawPointMarkers(Side)
 							HSDisplayDriver.RefreshMarkers()
 						Case Camera.Center
 							lblVisionMessageCenter.Text = HSLoc(Side).MessageNumber(0) & " " & HSLoc(Side).MessageDescription(0)
@@ -2689,7 +2371,7 @@ Public Class frmMain
 							lblVisionPoseScoreCenter.Text = LocatorResults(Side).Score.ToString("N2")
 							lblVisionPoseFitCenter.Text = LocatorResults(Side).Fit.ToString("N2")
 							CheckThresholds(Side)
-							UpdatePointMarkers(Side)
+							DrawPointMarkers(Side)
 							HSDisplayCenter.RefreshMarkers()
 						Case Camera.Passenger
 							lblVisionMessagePassenger.Text = HSLoc(Side).MessageNumber(0) & " " & HSLoc(Side).MessageDescription(0)
@@ -2699,9 +2381,9 @@ Public Class frmMain
 							lblVisionPoseScorePassenger.Text = LocatorResults(Side).Score.ToString("N2")
 							lblVisionPoseFitPassenger.Text = LocatorResults(Side).Fit.ToString("N2")
 							CheckThresholds(Side)
-							UpdatePointMarkers(Side)
+							DrawPointMarkers(Side)
 							HSDisplayPassenger.RefreshMarkers()
-						Case Camera.BracketAtConveyor
+						Case Camera.BracketAtDialTable
 							lblVisionMessageBracketConveyor.Text = HSLoc(Side).MessageNumber(0) & " " & HSLoc(Side).MessageDescription(0)
 							lblVisionPoseXBracketConveyor.Text = LocatorResults(Side).Point.X.ToString("N2")
 							lblVisionPoseYBracketConveyor.Text = LocatorResults(Side).Point.Y.ToString("N2")
@@ -2713,7 +2395,7 @@ Public Class frmMain
 							PLC_IO_Write_Bracket(1).Vision_Data_Y = LocatorResults(Side).Point.Y * 10
 							PLC_IO_Write_Bracket(1).Vision_Data_R = LocatorResults(Side).Angle * 100
 							PLC_IO_Write_Bracket(1).VisStat = LocatorResults(Side).Status
-							UpdatePointMarkers(Side)
+							DrawPointMarkers(Side)
 							HSDisplayBracketConveyor.RefreshMarkers()
 						Case Camera.BracketTape
 							'  lblVisionMessageBracketTape.Text = HSLoc(Side).MessageNumber(0) & " " & HSLoc(Side).MessageDescription(0)
@@ -2724,7 +2406,7 @@ Public Class frmMain
 								lblVisionTapeScoreData.Text = LocatorResults(Side).Score.ToString("N2")
 							End If
 							CheckThresholds(Side)
-							UpdatePointMarkers(Side)
+							DrawPointMarkers(Side)
 						Case Camera.BracketPrimer
 							lblVisionMessageBracketPrimer.Text = HSLoc(Side).MessageNumber(0) & " " & HSLoc(Side).MessageDescription(0)
 							lblVisionPoseXBracketPrimer.Text = LocatorResults(Side).Point.X.ToString("N2")
@@ -2733,7 +2415,7 @@ Public Class frmMain
 							lblVisionPoseScoreBracketPrimer.Text = LocatorResults(Side).Score.ToString("N2")
 							lblVisionPoseFitBracketPrimer.Text = LocatorResults(Side).Fit.ToString("N2")
 							CheckThresholds(Side)
-							UpdatePointMarkers(Side)
+							DrawPointMarkers(Side)
 							HSDisplayBracketPrimer.RefreshMarkers()
 					End Select
 				Else
@@ -2758,8 +2440,8 @@ Public Class frmMain
 							lblPassengerInspection.BackColor = Color.Red
 							lblVisionMessagePassenger.BackColor = Color.Red
 							LocatorResults(Side).Status = 2
-						Case Camera.BracketAtConveyor
-							lblVisionMessageBracketConveyor.Text = "Image was Not located - " & CStr(HSLoc(Camera.BracketAtConveyor).MessageDescription(0))
+						Case Camera.BracketAtDialTable
+							lblVisionMessageBracketConveyor.Text = "Image was Not located - " & CStr(HSLoc(Camera.BracketAtDialTable).MessageDescription(0))
 							lblBracketInspectionConveyor.BackColor = Color.Red
 							lblVisionMessageBracketConveyor.BackColor = Color.Red
 							PLC_IO_Write_Bracket(1).VisStat = LocatorResults(Side).Status
@@ -2806,7 +2488,7 @@ Public Class frmMain
 						lblVisionMessagePassenger.Text = CStr(HSAcq.ErrorDescription)
 						lblCenterInspection.BackColor = Color.Red
 						lblVisionMessagePassenger.BackColor = Color.Red
-					Case Camera.BracketAtConveyor
+					Case Camera.BracketAtDialTable
 						HSDisplayBracketConveyor.set_ScenePenWidth(1, HSDISPLAYLib.hsPenWidth.hsPenWidthNone)
 						lblVisionMessageBracketConveyor.Text = CStr(HSAcq.ErrorDescription)
 						lblBracketInspectionConveyor.BackColor = Color.Red
@@ -2838,7 +2520,7 @@ Public Class frmMain
 					Case Camera.Passenger
 						HSDisplayPassenger.RemoveAllMarker()
 						eText = False
-					Case Camera.BracketAtConveyor
+					Case Camera.BracketAtDialTable
 						HSDisplayBracketConveyor.RemoveAllMarker()
 						eText = False
 					Case Camera.BracketTape
@@ -2852,7 +2534,7 @@ Public Class frmMain
 						eText = False
 				End Select
 			Else
-				UpdatePointMarkers(Side)
+				DrawPointMarkers(Side)
 			End If
 			GC.Collect()
 		Catch ex As Exception
@@ -2933,7 +2615,7 @@ Public Class frmMain
 						lblBracketInspectionVerify.BackColor = Color.Red
 						LocatorResults(Side).Status = 2
 					End If
-				Case Camera.BracketAtConveyor
+				Case Camera.BracketAtDialTable
 					If LocatorResults(Side).Score >= CDbl(updnScoreLimitBracketconveyor.Value) Then
 						lblVisionMessageBracketConveyor.Text = "Image was successfully located" & vbCrLf & Date.Now
 						lblVisionMessageBracketConveyor.BackColor = System.Drawing.SystemColors.Control
@@ -3036,12 +2718,13 @@ Public Class frmMain
 
 #Region "Hexsight Display Markers"
 
-	Private Sub UpdatePointMarkers(ByVal Side As Int32)
+	Private Sub DrawPointMarkers(ByVal Side As Int32)
 		Try
 			' Display an axes marker for pickup
 			Select Case Side
 				Case Camera.LocateGlass
 					With HSDisplayLocateGlass
+						'TODO Code is redundant , call the next subrouting to do the same thing.
 						.AddAxesMarker("Placement", LocatorResults(Side).Point.X, LocatorResults(Side).Point.Y, 50, 50, LocatorResults(Side).Angle, 90, True)
 						.set_MarkerDisplayName("Placement", True)
 						.set_MarkerColor("Placement", HSDISPLAYLib.hsColor.hsBlue)
@@ -3052,7 +2735,7 @@ Public Class frmMain
 						.set_MarkerDisplayName("Verification", True)
 						.set_MarkerColor("Verification", HSDISPLAYLib.hsColor.hsMagenta)
 					End With
-				Case Camera.BracketAtConveyor
+				Case Camera.BracketAtDialTable
 					With HSDisplayBracketConveyor
 						.AddAxesMarker("Pickup", LocatorResults(Side).Point.X, LocatorResults(Side).Point.Y, 50, 50, LocatorResults(Side).Angle, 90, True)
 						.set_MarkerDisplayName("Pickup", True)
@@ -3064,13 +2747,13 @@ Public Class frmMain
 		End Try
 	End Sub
 
-	Private Sub UpdatePointMarker(Display As Object, Side As Integer, MarkerName As String)
+	Private Sub DrawPointMarker(Display As Object, Side As Integer, MarkerName As String)
 		Display.AddAxesMarker(MarkerName, LocatorResults(Side).Point.X, LocatorResults(Side).Point.Y, 50, 50, LocatorResults(Side).Angle, 90, True)
 		Display.set_MarkerDisplayName(MarkerName, True)
 		Display.set_MarkerColor(MarkerName, HSDISPLAYLib.hsColor.hsYellow)
 	End Sub
 
-	Private Sub UpdateAxisMarker(ByRef Side As Int32)
+	Private Sub DrawAxisMarker(ByRef Side As Int32)
 		Try
 			' Display an axes marker for pickup
 			Select Case Side
@@ -3081,7 +2764,7 @@ Public Class frmMain
 						.set_MarkerDisplayName("New Pickup", True)
 						.set_MarkerColor("New Pickup", HSDISPLAYLib.hsColor.hsGreen)
 					End With
-				Case Camera.BracketAtConveyor
+				Case Camera.BracketAtDialTable
 					With HSDisplayBracketConveyor
 						.RemoveMarker("New Pickup")
 						.AddAxesMarker("New Pickup", LocatorResults(Side).Point.X + updnLocationX.Value, LocatorResults(Side).Point.Y + updnLocationY.Value, 50, 50, LocatorResults(Side).Angle + updnLocationR.Value, 90, True)
@@ -3094,9 +2777,19 @@ Public Class frmMain
 		End Try
 	End Sub
 
+	Private Sub DrawRectangleMarker(display As AxHSDisplay, name As String, x As Single, y As Single, r As String, toolwidth As Single, toolheight As Single, ByVal color As Int32, ByVal constraints As Int32)
+		' Draws a Hexsight Rectangle on the display
+		display.AddRectangleMarker(name, x, y, toolwidth, toolheight, True) 'user drawable box
+		display.set_RectangleMarkerHeight(name, toolheight)
+		display.set_RectangleMarkerWidth(name, toolwidth)
+		display.set_RectangleMarkerRotation(name, r)
+		display.set_MarkerColor(name, color)
+		display.set_RectangleMarkerConstraints(name, constraints)
+	End Sub
+
 	Private Sub DisplayBlobRegions(BlobName As String)
 		'Dim butn As Button
-		'butn = DirectCast(Sender, Button)
+		'butn = DirectCast(Sender, Button)lo
 		'Dim X, Y, R, Width, height As Single
 		Dim Display As Object = HSDisplayCenter
 		Try
@@ -3107,28 +2800,6 @@ Public Class frmMain
 					Display = HSDisplayCenter
 				Case "Passenger Blob"
 					Display = HSDisplayPassenger
-				Case "Bracket Primer Blob 1"
-					Display = HSDisplayBracketPrimer
-				Case "Bracket Primer Blob 2"
-					Display = HSDisplayBracketPrimer
-				Case "Bracket Primer Blob 3"
-					Display = HSDisplayBracketPrimer
-				Case "Bracket Primer Blob 4"
-					Display = HSDisplayBracketPrimer
-				Case "Bracket Primer Blob 5"
-					Display = HSDisplayBracketPrimer
-				Case "Bracket Primer Blob Reference"
-					Display = HSDisplayBracketPrimer
-				Case "Bracket Tape Blob 1"
-					Display = HSDisplayBracketTape
-				Case "Bracket Tape Blob 2"
-					Display = HSDisplayBracketTape
-				Case "Bracket Tape Blob 3"
-					Display = HSDisplayBracketTape
-				Case "Bracket Tape Blob 4"
-					Display = HSDisplayBracketTape
-				Case "Tape Cover Blob Top Left", "Tape Cover Blob Top Right", "Tape Cover Blob Bottom Left", "Tape Cover Blob Bottom Right"
-					Display = HSDisplayBracketTape
 			End Select
 			'Get the Region of Interest Rectangle
 			HSBlob = HSApp.ProcessManager.Process(BlobName)
@@ -3153,13 +2824,12 @@ Public Class frmMain
 			'Compute the final rotation of the tool position
 			Dim rotation As Single = transformr + toolr
 			'Display the Region of Interest Rectangle
-			Display.AddRectangleMarker(BlobName, x, y, toolwidth, toolheight, True) 'user drawable box
-			Display.set_RectangleMarkerHeight(BlobName, toolheight)
-			Display.set_RectangleMarkerWidth(BlobName, toolwidth)
-			Display.set_RectangleMarkerRotation(BlobName, rotation)
+			DrawRectangleMarker(Display, BlobName, x, y, rotation, toolwidth, toolheight, hsColor.hsGreen, hsRectangleMarkerConstraints.hsRectangleCornerBasedEdition)
 			HSDisplayDriver.ChangeRectangleMarker(BlobName, x, y, toolwidth, toolheight, True)
-			'Display.set_RectangleMarkerConstraints(BlobName, HSDISPLAYLib.hsRectangleMarkerConstraints.hsRectangleNoConstraints)
-			Display.set_MarkerColor(BlobName, HSDISPLAYLib.hsColor.hsGreen)
+			'TODO Remove rectangle info
+			'Display.set_RectangleMarkerrRotation(BlobName, rotation)
+			''Display.set_RectangleMarkerConstraints(BlobName, HSDISPLAYLib.hsRectangleMarkerConstraints.hsRectangleNoConstraints)
+			'Display.set_MarkerColor(BlobName, HSDISPLAYLib.hsColor.hsGreen)
 		Catch ex As Exception
 			ShowVBErrors("Blob Training", ex.Message)
 		End Try
@@ -3171,7 +2841,7 @@ Public Class frmMain
 	Private Sub IOTimer_Tick(ByVal sender As Object, ByVal e As System.EventArgs) Handles IOTimer.Tick
 		Try
 			If PLCIO(0) = True Then
-				PLC_Check_Primer("PLC")
+				PLC_Check_Glass_Primer("PLC")
 				PLCIO(0) = False
 			End If
 			If PLCIO(1) = True Then
@@ -3183,7 +2853,7 @@ Public Class frmMain
 				PLCIO(2) = False
 			End If
 			If PLCIO(3) = True Then
-				PLC_Bracket_Conveyor_Location()
+				PLC_Bracket_DialTable_Location()
 				PLCIO(3) = False
 			End If
 			If PLCIO(4) = True Then
@@ -3191,17 +2861,9 @@ Public Class frmMain
 				PLC_Vision_Camera_Verify()
 				PLCIO(4) = False
 			End If
-			If PLCIO(5) = True Then
-				PLC_Bracket_Tape()
-				PLCIO(5) = False
-			End If
 			If PLCIO(6) = True Then
 				resetLabels()
 				PLCIO(6) = False
-			End If
-			If PLCIO(7) = True Then
-				PLC_Bracket_Primer()
-				PLCIO(7) = False
 			End If
 			'Check_Temp()
 		Catch ex As Exception
@@ -3337,12 +2999,6 @@ Public Class frmMain
 					Case updnContrastBracketConveyor.Name
 						Success = HelperCamBracket.SetSimpleFeature("gain", CSng(updn.Value), Side)
 						If Not UpdatingPartData Then frmDataBase.SetValue("Bracket", "Value", updn.Name, updn.Value)
-					Case updnContrastBracketPrimer.Name
-						Success = HelperCamTapePrimer.SetSimpleFeature("gain", CSng(updn.Value), Side)
-						If Not UpdatingPartData Then frmDataBase.SetValue("Bracket", "Value", updn.Name, updn.Value)
-					Case updnContrastBracketTape.Name
-						Success = HelperCamTapePrimer.SetSimpleFeature("gain", CSng(updn.Value), Side)
-						If Not UpdatingPartData Then frmDataBase.SetValue("Bracket", "Value", updn.Name, updn.Value)
 					Case updnContrastDriver.Name
 						Success = HelperCamDriver.SetSimpleFeature("gain", CSng(updn.Value), Side)
 						If Not UpdatingPartData Then frmDataBase.SetValue("Partdata", "Value", updn.Name, updn.Value)
@@ -3359,14 +3015,8 @@ Public Class frmMain
 					Case updnExposureLocateGlass.Name
 						Success = HelperCamCenter.SetSimpleFeature("exposure", CSng(updn.Value), Side)
 						If Not UpdatingPartData Then frmDataBase.SetValue("Partdata", "Value", updn.Name, updn.Value)
-					Case updnExposureBracketPrimer.Name
-						Success = HelperCamTapePrimer.SetSimpleFeature("exposure", CSng(updn.Value), Side)
-						If Not UpdatingPartData Then frmDataBase.SetValue("Bracket", "Value", updn.Name, updn.Value)
 					Case updnExposureBracketConveyor.Name
 						Success = HelperCamBracket.SetSimpleFeature("exposure", CSng(updn.Value), Side)
-						If Not UpdatingPartData Then frmDataBase.SetValue("Bracket", "Value", updn.Name, updn.Value)
-					Case updnExposureBracketTape.Name
-						Success = HelperCamTapePrimer.SetSimpleFeature("exposure", CSng(updn.Value), Side)
 						If Not UpdatingPartData Then frmDataBase.SetValue("Bracket", "Value", updn.Name, updn.Value)
 					Case updnExposureDriver.Name
 						Success = HelperCamDriver.SetSimpleFeature("exposure", CSng(updn.Value), Side)
@@ -3746,10 +3396,6 @@ Public Class frmMain
 		End Try
 	End Function
 
-	''' <summary>
-	''' 
-	''' </summary>
-	''' <returns></returns>
 	Public Function LoadBracket() As Boolean
 		Dim Success As Boolean = False
 		LoadBracket = False
@@ -3759,7 +3405,7 @@ Public Class frmMain
 			HSDisplayBracketTape.RemoveAllMarker()
 			HSDisplayBracketPrimer.RemoveAllMarker()
 			'Load the locators
-			Success = HSLoc(Camera.BracketAtConveyor).LoadModelDatabase(ConfigPath & "Bracket Conveyor Locate.hdb")
+			Success = HSLoc(Camera.BracketAtDialTable).LoadModelDatabase(ConfigPath & "Bracket Conveyor Locate.hdb")
 			If Not Success Then
 				MsgBox("Unable to load the model file for the Bracket Side Conveyor")
 			End If
@@ -3772,6 +3418,7 @@ Public Class frmMain
 				MsgBox("Unable to load the model file for the Bracket Primer Verification")
 			End If
 			'Bracket Primer 1-5 load
+			'TODO Modify the code below to use the bracket database so that Value is replaced by X,Y,R,ToolWidth,ToolHeight
 			For i As Int16 = 1 To 5
 				HSBlob = HSApp.ProcessManager.Process("Bracket Primer Blob " & i)
 				HSBlob.ToolPositionX = frmDataBase.GetValue("Bracket", "Value", "BracketPrimerBlobToolPosX" & i)
@@ -4237,7 +3884,7 @@ Public Class frmMain
 			HSBlob.ToolHeight = RectHeight
 			'Change color of the rectangle and make it unmovable
 			Display.set_MarkerColor(BlobName, HSDISPLAYLib.hsColor.hsGreen)
-			Display.set_RectangleMarkerConstraints(BlobName, HSDISPLAYLib.hsRectangleMarkerConstraints.hsRectangleNoEdit)
+			Display.set_RectangleMarkerConstraints(BlobName, hsRectangleMarkerConstraints.hsRectangleNoEdit)
 			'Save the blob location to the database
 			SaveBlobRegionsToDatabase(Database, BlobDatabaseNames)
 		Catch ex As Exception
@@ -4270,8 +3917,8 @@ Public Class frmMain
 			Mnu = DirectCast(sender, ToolStripMenuItem)
 			Select Case Mnu.Name
 				Case mnuCalibrateBracket.Name
-					Snap(Camera.BracketAtConveyor)
-					CalibrateCam(Camera.BracketAtConveyor)
+					Snap(Camera.BracketAtDialTable)
+					CalibrateCam(Camera.BracketAtDialTable)
 				Case mnuCalibrateCenter.Name
 					Snap(Camera.LocateGlass)
 					CalibrateCam(Camera.LocateGlass)
@@ -4370,7 +4017,7 @@ Public Class frmMain
 				Case Else
 			End Select
 			Side = Camera.LocateGlass
-			UpdateAxisMarker(Side)
+			DrawAxisMarker(Side)
 		Catch ex As Exception
 			ShowVBErrors("BtnLocationAdjustment ", ex.Message)
 		End Try
@@ -4396,7 +4043,7 @@ Public Class frmMain
 			HSModel.Apply()
 			HSLoc(Side).SaveModelDatabase(CurrentFilePath & CamLocation(Side) & ".hdb")
 			HSLoc(Side).HideModelEditor()
-			UpdateAxisMarker(Side)
+			DrawAxisMarker(Side)
 			PartSettingLocationZ = updnLocationZ.Value
 			'PLC_DriverCLX.Write("Vis_PC_Robot_GLS_Z", updnLocationZ.Value)
 			frmDataBase.SetValue("Partdata", "Value", updnLocationZ.Name, PartSettingLocationZ)
@@ -4435,10 +4082,6 @@ Public Class frmMain
 		ActivatePassword(OperPassword)
 	End Sub
 
-	Private Sub lblupdnTapeValueTopleft_Click(sender As Object, e As EventArgs)
-
-	End Sub
-
 	Private Sub btnShiftCntrs_Click(sender As Object, e As EventArgs) Handles btnShiftCntrs.Click
 		frmShiftCnts.Show()
 	End Sub
@@ -4458,14 +4101,10 @@ Public Class frmMain
 		End If
 	End Sub
 
-	Private Sub LblBracketInspectionConveyor_Click(sender As Object, e As EventArgs) Handles lblBracketInspectionConveyor.Click
-
-	End Sub
-
 #End Region
 
 #Region "PLC"
-	Private Sub Init_PLC()
+	Private Sub UpdatePLCTags()
 		Try
 			'Aron Mighty
 			PLC_Tags.plcTag_PrimerCheckStart = "Vis_Cam_PrimerChk.Start"
@@ -4483,19 +4122,11 @@ Public Class frmMain
 			PLC_Tags.plcTag_BracketGlassLocationDone = "Vis_Cam_GlassLoc.Done"
 			'Bracket Conveyor Pick
 			PLC_Tags.plcTag_BracketConveyorLocationStart = "Vis_Cam_BracketLoc.Start"
-			PLC_Tags.plcTag_BracketConveyorLocationX = "Vis_Cam_BracketLoc.X"
-			PLC_Tags.plcTag_BracketConveyorLocationY = "Vis_Cam_BracketLoc.Y"
-			PLC_Tags.plcTag_BracketConveyorLocationR = "Vis_Cam_BracketLoc.R"
-			PLC_Tags.plcTag_BracketConveyorLocationStat = "Vis_Cam_BracketLoc.Stat"
-			PLC_Tags.plcTag_BracketConveyorLocationDone = "Vis_Cam_BracketLoc.Done"
-			'Glue Application
-			PLC_Tags.plcTag_LaserGluePass = "Vis_Laser_Glue.Passed"
-			PLC_Tags.plcTag_LaserGlueFail = "Vis_Laser_Glue.Failed"
-			'Bracket Tape Verification
-			PLC_Tags.plcTag_BracketTapeStart = "Vis_Cam_Tape.Start"
-			PLC_Tags.plcTag_BracketTapePass = "Vis_Cam_Tape.Passed"
-			PLC_Tags.plcTag_BracketTapeFail = "Vis_Cam_Tape.Failed"
-			PLC_Tags.plcTag_BracketTapeDone = "Vis_Cam_Tape.Done"
+			PLC_Tags.plcTag_BracketDialTableLocationX = "Vis_Cam_BracketLoc.X"
+			PLC_Tags.plcTag_BracketDialTableLocationY = "Vis_Cam_BracketLoc.Y"
+			PLC_Tags.plcTag_BracketDialTableLocationR = "Vis_Cam_BracketLoc.R"
+			PLC_Tags.plcTag_BracketDialTableLocationStat = "Vis_Cam_BracketLoc.Stat"
+			PLC_Tags.plcTag_BracketDialTableLocationDone = "Vis_Cam_BracketLoc.Done"
 			'Bracket Placement Verification
 			PLC_Tags.plcTag_BracketVerifyStart = "Vis_Cam_Verify.Start"
 			PLC_Tags.plcTag_BracketVerifyPass = "Vis_Cam_Verify.Passed"
@@ -4510,15 +4141,8 @@ Public Class frmMain
 			PLC_Tags.plcTag_HPrimerStart = "Vis_Cam_H_Primerchk.Start"
 			PLC_Tags.plcTag_HPrimerPass = "Vis_Cam_H_Primerchk.Passed"
 			PLC_Tags.plcTag_HPrimerFail = "Vis_Cam_H_Primerchk.Failed"
-			PLC_Tags.plcTag_HPrimerDone = "Vis_Cam_H_Primerchk.Done"
-			'Bracket Primer
-			PLC_Tags.plcTag_BracketPrimerPassed = "Vis_Cam_Bracket_Prime.Passed"
-			PLC_Tags.plcTag_BracketPrimerFail = "Vis_Cam_Bracket_Prime.Failed"
-			PLC_Tags.plcTag_BracketPrimerStart = "Vis_Cam_Bracket_Prime.Start"
-			PLC_Tags.plcTag_BracketPrimerDone = "Vis_Cam_Bracket_Prime.Done"
 			'Misc Controls
 			PLC_Tags.plcTag_ShiftClr = "HMI_ShiftClr"
-
 			'init bg worker
 			PLC_Bworker.WorkerSupportsCancellation = True
 			Control.CheckForIllegalCrossThreadCalls = False
@@ -4543,10 +4167,11 @@ Public Class frmMain
 
 	Public Function PLC_HeartBeat() As Boolean
 		Try
-			Dim HB As Boolean = PLC_DriverCLX.Read(PLC_Tags.plcTag_Heartbeat)
-			PLC_DriverCLX.Write(PLC_Tags.plcTag_Heartbeat, CInt(Not HB))
-			lblHeartBeat.ForeColor = Color.Black
-			lblHeartBeat.Text = "Heartbeat " & HB
+			'TODO Uncomment when needing the PLC
+			'Dim HB As Boolean = PLC_DriverCLX.Read(PLC_Tags.plcTag_Heartbeat)
+			'PLC_DriverCLX.Write(PLC_Tags.plcTag_Heartbeat, CInt(Not HB))
+			'lblHeartBeat.ForeColor = Color.Black
+			'lblHeartBeat.Text = "Heartbeat " & HB
 			Return True
 		Catch ex As Exception
 			ShowVBErrors("PLC Heartbeat ", ex.Message)
@@ -4599,9 +4224,6 @@ Public Class frmMain
 				lblTemperatureBracket.Text = lblTemperatureCenter.Text
 				lblTemperatureBracket.BackColor = lblTemperatureCenter.BackColor
 			End If
-			If InitSuccessPrimerTape Then GetTemperature(HelperCamTapePrimer, lblTemperatureBracketPrimer)
-			lblTemperatureBracketTape.Text = lblTemperatureBracketPrimer.Text
-			lblTemperatureBracketTape.BackColor = lblTemperatureBracketPrimer.BackColor
 			tmrDisplayUpdate.Enabled = True
 		Catch ex As Exception
 			ShowVBErrors("tmrDisplayUpdate", ex.Message)
@@ -4609,179 +4231,102 @@ Public Class frmMain
 	End Sub
 
 	Public Sub PLC_Read_IO()
+		'TODO Remove when needing PLC communication
+		Exit Sub
 		Try
-			'	'Primer Check Start Recieved
-			'	If CBool('PLC_DriverCLX.Read(PLC_Tags.plcTag_PrimerCheckStart)) Then
-			'		lblmessagedesc.Text = "Primer Check Start Recieved"
-			'		If Not INRoutines Then
-			'			Do While 'PLC_DriverCLX.Read(PLC_Tags.plcTag_PrimerCheckStart)
-			'				'PLC_DriverCLX.Write(PLC_Tags.plcTag_PrimerCheckStart, 0)
-			'			Loop
-			'			PLCIO(0) = True
-			'		End If
-			'	End If
-			'	If CBool('PLC_DriverCLX.Read(PLC_Tags.plcTag_HPrimerStart)) Then
-			'		lblmessagedesc.Text = "Center Primer Start Recieved"
-			'		If Not INRoutines Then
-			'			Do While 'PLC_DriverCLX.Read(PLC_Tags.plcTag_HPrimerStart)
-			'				'PLC_DriverCLX.Write(PLC_Tags.plcTag_HPrimerStart, 0)
-			'			Loop
-			'			PLCIO(1) = True
-			'		End If
-			'	End If
-			'	'Glass Locator Start Recieved
-			'	If CBool('PLC_DriverCLX.Read(PLC_Tags.plcTag_BracketGlassLocationStart)) Then
-			'		lblmessagedesc.Text = "Glass Location Start Recieved"
-			'		If Not INRoutines Then
-			'			Do While 'PLC_DriverCLX.Read(PLC_Tags.plcTag_BracketGlassLocationStart)
-			'				'PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketGlassLocationStart, 0)
-			'			Loop
-			'			PLCIO(2) = True
-			'		End If
-			'	End If
-			'	'Bracket Locator Conveyor Start Recieved
-			'	If 'PLC_DriverCLX.Read(PLC_Tags.plcTag_BracketConveyorLocationStart) Then
-			'		lblmessagedesc.Text = "Bracket Locator Conveyor Start Recieved"
-			'		If Not INRoutines Then
-			'			Do While 'PLC_DriverCLX.Read(PLC_Tags.plcTag_BracketConveyorLocationStart)
-			'				'PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketConveyorLocationStart, 0)
-			'			Loop
-			'			PLCIO(3) = True
-			'		End If
-			'	End If
-			'	'bracket Primer Verification
-			'	If 'PLC_DriverCLX.Read(PLC_Tags.plcTag_BracketPrimerStart) Then
-			'		lblmessagedesc.Text = "Bracket Primer Verification Start Recieved"
-			'		If Not INRoutines Then
-			'			Do While 'PLC_DriverCLX.Read(PLC_Tags.plcTag_BracketPrimerStart)
-			'				'PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketPrimerStart, 0)
-			'			Loop
-			'			PLCIO(7) = True
-			'		End If
-			'	End If
-			'	'Vision Camera Verification
-			'	If 'PLC_DriverCLX.Read(PLC_Tags.plcTag_BracketVerifyStart) Then
-			'		lblmessagedesc.Text = "Vision Camera Verification Recieved"
-			'		If Not INRoutines Then
-			'			Do While 'PLC_DriverCLX.Read(PLC_Tags.plcTag_BracketVerifyStart)
-			'				'PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketVerifyStart, 0)
-			'			Loop
-			'			PLCIO(4) = True
-			'		End If
-			'	End If
-			'	'Tape Verification
-			'	If 'PLC_DriverCLX.Read(PLC_Tags.plcTag_BracketTapeStart) Then
-			'		lblmessagedesc.Text = "Tape Verification Recieved"
-			'		If Not INRoutines Then
-			'			Do While 'PLC_DriverCLX.Read(PLC_Tags.plcTag_BracketTapeStart)
-			'				'PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketTapeStart, 0)
-			'			Loop
-			'			PLCIO(5) = True
-			'		End If
-			'	End If
-			'	'
-			'	'Check For Glue
-			'	If 'PLC_DriverCLX.Read(PLC_Tags.plcTag_LaserGluePass) Then
-			'		lblmessagedesc.Text = "Bracket Urethane Passed"
-			'		lblGlueApplication.BackColor = Color.YellowGreen
-			'	End If
-			'	If 'PLC_DriverCLX.Read(PLC_Tags.plcTag_LaserGlueFail) Then
-			'		lblmessagedesc.Text = "Bracket Urethane Failed"
-			'		lblGlueApplication.BackColor = Color.Red
-			'	End If
-			'	'
-			'	'Light Controls
-			'	If 'PLC_DriverCLX.Read(PLC_Tags.plcTag_OverLight) Then	'Main Conveyor overhead light
-			'		lblOverheadLight.BackColor = Color.White
-			'	Else
-			'		lblOverheadLight.BackColor = System.Drawing.SystemColors.Control
-			'	End If
-			'	'
-			'	If 'PLC_DriverCLX.Read(PLC_Tags.plcTag_Backlight) Then	'Conveyor Backlight
-			'		lblbacklight.BackColor = Color.White
-			'	Else
-			'		lblbacklight.BackColor = System.Drawing.SystemColors.Control
-			'	End If
+			'Primer Check Start Recieved
+			If CBool(PLC_DriverCLX.Read(PLC_Tags.plcTag_PrimerCheckStart)) Then
+				lblmessagedesc.Text = "Primer Check Start Recieved"
+				If Not INRoutines Then
+					Do While PLC_DriverCLX.Read(PLC_Tags.plcTag_PrimerCheckStart)
+						PLC_DriverCLX.Write(PLC_Tags.plcTag_PrimerCheckStart, 0)
+					Loop
+					PLCIO(0) = True
+				End If
+			End If
+			If CBool(PLC_DriverCLX.Read(PLC_Tags.plcTag_HPrimerStart)) Then
+				lblmessagedesc.Text = "Center Primer Start Recieved"
+				If Not INRoutines Then
+					Do While PLC_DriverCLX.Read(PLC_Tags.plcTag_HPrimerStart)
+						PLC_DriverCLX.Write(PLC_Tags.plcTag_HPrimerStart, 0)
+					Loop
+					PLCIO(1) = True
+				End If
+			End If
+			'Glass Locator Start Recieved
+			If CBool(PLC_DriverCLX.Read(PLC_Tags.plcTag_BracketGlassLocationStart)) Then
+				lblmessagedesc.Text = "Glass Location Start Recieved"
+				If Not INRoutines Then
+					Do While PLC_DriverCLX.Read(PLC_Tags.plcTag_BracketGlassLocationStart)
+						PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketGlassLocationStart, 0)
+					Loop
+					PLCIO(2) = True
+				End If
+			End If
+			'Bracket Locator Conveyor Start Recieved
+			If PLC_DriverCLX.Read(PLC_Tags.plcTag_BracketConveyorLocationStart) Then
+				lblmessagedesc.Text = "Bracket Locator Conveyor Start Recieved"
+				If Not INRoutines Then
+					Do While PLC_DriverCLX.Read(PLC_Tags.plcTag_BracketConveyorLocationStart)
+						PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketConveyorLocationStart, 0)
+					Loop
+					PLCIO(3) = True
+				End If
+			End If
+			'Vision Camera Verification
+			If PLC_DriverCLX.Read(PLC_Tags.plcTag_BracketVerifyStart) Then
+				lblmessagedesc.Text = "Vision Camera Verification Recieved"
+				If Not INRoutines Then
+					Do While PLC_DriverCLX.Read(PLC_Tags.plcTag_BracketVerifyStart)
+						PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketVerifyStart, 0)
+					Loop
+					PLCIO(4) = True
+				End If
+			End If
+			'
+			'Light Controls
+			If PLC_DriverCLX.Read(PLC_Tags.plcTag_OverLight) Then 'Main Conveyor overhead light
+				lblOverheadLight.BackColor = Color.White
+			Else
+				lblOverheadLight.BackColor = System.Drawing.SystemColors.Control
+			End If
+			'
+			If PLC_DriverCLX.Read(PLC_Tags.plcTag_Backlight) Then 'Conveyor Backlight
+				lblbacklight.BackColor = Color.White
+			Else
+				lblbacklight.BackColor = System.Drawing.SystemColors.Control
+			End If
 
-			'	If 'PLC_DriverCLX.Read("Vis_Lights.7") Then 'Turn the Bracket Primer/Tape Light 
-			'		lblbacklightPrimer.BackColor = Color.White
-			'	Else
-			'		lblbacklightPrimer.BackColor = System.Drawing.SystemColors.Control
-			'	End If
+			If PLC_DriverCLX.Read("Vis_Lights.7") Then 'Turn the Bracket Primer/Tape Light 
+				lblbacklightPrimer.BackColor = Color.White
+			Else
+				lblbacklightPrimer.BackColor = System.Drawing.SystemColors.Control
+			End If
 
-			'	'all cameras are online now check for gocator
-			'	Dim GoCatorResult As Boolean
-			'	GoCatorResult = My.Computer.Network.Ping("192.168.1.10")
-			'	If GoCatorResult Then
-			'		lblLaser.BackColor = Color.YellowGreen
-			'	Else
-			'		DebugGocator = DebugGocator + 1
-			'		lblGocater.Text = "Gocator Offline Times: " & DebugGocator
-			'		lblLaser.BackColor = Color.Red
-			'	End If
-			'	'Check Passfail on the trademark inspection system
-			'	If 'PLC_DriverCLX.Read("Vis_Cam_TM.Passed") Then
-			'		lblTrademarkInspection.BackColor = Color.YellowGreen
-			'	ElseIf 'PLC_DriverCLX.Read("Vis_Cam_TM.Failed") Then
-			'		lblTrademarkInspection.BackColor = Color.Red
-			'	End If
-			'	'Reset Label colors to default
-			'	If 'PLC_DriverCLX.Read("Vis_PC_Inspections.15") Then
-			'		PLCIO(6) = True
-			'		'PLC_DriverCLX.Write("Vis_PC_Inspections.15", 0)
-			'	End If
+			'all cameras are online now check for gocator
+			Dim GoCatorResult As Boolean
+			GoCatorResult = My.Computer.Network.Ping("192.168.1.10")
+			If GoCatorResult Then
+				lblLaser.BackColor = Color.YellowGreen
+			Else
+				DebugGocator = DebugGocator + 1
+				lblGocater.Text = "Gocator Offline Times: " & DebugGocator
+				lblLaser.BackColor = Color.Red
+			End If
+			'Check Passfail on the trademark inspection system
+			If PLC_DriverCLX.Read("Vis_Cam_TM.Passed") Then
+				lblTrademarkInspection.BackColor = Color.YellowGreen
+			ElseIf PLC_DriverCLX.Read("Vis_Cam_TM.Failed") Then
+				lblTrademarkInspection.BackColor = Color.Red
+			End If
+			'Reset Label colors to default
+			If PLC_DriverCLX.Read("Vis_PC_Inspections.15") Then
+				PLCIO(6) = True
+				PLC_DriverCLX.Write("Vis_PC_Inspections.15", 0)
+			End If
 		Catch ex As Exception
 			ShowVBErrors("PLC_Read_IO", ex.Message)
 		End Try
-	End Sub
-
-	Public Sub PLC_Bracket_Tape()
-		Try
-			If mnuTabSwitching.Checked Then TabControlsMain.SelectedTab = tabPageBracketLocateTape
-			Dim StartTimer As Single
-			Dim Success(4) As Boolean
-			INRoutines = True
-			'
-			Success(0) = HelperCamTapePrimer.SetSimpleFeature("exposure", updnExposureBracketTape.Value, Camera.BracketTape)
-			Success(0) = HelperCamTapePrimer.SetSimpleFeature("gain", updnContrastBracketTape.Value, Camera.BracketTape)
-			Snap(Camera.BracketTape)
-			'
-			StartTimer = VB.Timer
-			lblVisionTapeXData.Text = ""
-			lblVisionTapeYData.Text = ""
-			lblVisionTapeRData.Text = ""
-			lblVisionTapeTimeData.Text = ""
-			lblVisionTapeScoreData.Text = ""
-			lblTapeAreaTopLeft.BackColor = SystemColors.Control
-			lblTapeAreaTopRight.BackColor = SystemColors.Control
-			lblTapeAreaBottomLeft.BackColor = SystemColors.Control
-			lblTapeAreaBottomRight.BackColor = SystemColors.Control
-			lblTapeAreaTopLeft.Text = ""
-			lblTapeAreaTopRight.Text = ""
-			lblTapeAreaBottomLeft.Text = ""
-			lblTapeAreaBottomRight.Text = ""
-			'
-			Locate(Camera.BracketTape, True, True)
-			If CurrentTapeArea(1) AndAlso CurrentTapeArea(2) AndAlso CurrentTapeArea(3) AndAlso CurrentTapeArea(4) _
-				AndAlso CurrentTapeArea(5) AndAlso CurrentTapeArea(6) AndAlso CurrentTapeArea(7) AndAlso CurrentTapeArea(8) Then
-				''PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketTapePass, 1)
-				''PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketTapeDone, 1)
-				lblmessagedesc.Text = "Tape Verification Passed "
-				INRoutines = False
-			Else
-				''PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketTapeFail, 1)
-				''PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketTapeDone, 1)
-				lblmessagedesc.Text = "Tape Verification Failed "
-				INRoutines = False
-				lblBracketInspectionTape.BackColor = Color.Red
-			End If
-			'
-			lblVisionTapeTimeData.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
-		Catch ex As Exception
-			ShowVBErrors("PLC_Bracket_Tape", ex.Message)
-			INRoutines = False
-		End Try
-
 	End Sub
 
 	Public Sub PLC_Glass_Location()
@@ -4816,35 +4361,7 @@ Public Class frmMain
 		End Try
 	End Sub
 
-	Public Sub PLC_Bracket_Primer()
-		Dim Success As Boolean
-		Try
-			HSDisplayBracketPrimer.RemoveAllMarker()
-			INRoutines = True
-			Success = HelperCamTapePrimer.SetSimpleFeature("exposure", updnExposureBracketPrimer.Value, Camera.BracketPrimer)
-			Success = HelperCamTapePrimer.SetSimpleFeature("gain", updnContrastBracketPrimer.Value, Camera.BracketPrimer)
-			Snap(Camera.BracketPrimer)
-			If mnuTabSwitching.Checked Then TabControlsMain.SelectedTab = tabpageBracketPrimerVerify
-			Success = Locate(Camera.BracketPrimer, True, True)
-			If Not Success Then
-				''PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketPrimerFail, 1)	'??0 red shirt
-				''PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketPrimerDone, 1)
-				lblmessagedesc.Text = "Bracket Primer Check Inpection Failed"
-				lblBracketInspectionPrimer.BackColor = Color.Red
-			Else
-				''PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketPrimerPassed, 1)
-				''PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketPrimerDone, 1)
-				lblmessagedesc.Text = "Bracket Primer Check Inpection Passed"
-				lblBracketInspectionPrimer.BackColor = Color.YellowGreen
-			End If
-			INRoutines = False
-		Catch ex As Exception
-			ShowVBErrors("PLC_Check_Primer", ex.Message)
-			INRoutines = False
-		End Try
-	End Sub
-
-	Public Sub PLC_Check_Primer(ButtonName As String)
+	Public Sub PLC_Check_Glass_Primer(ButtonName As String)
 		Dim SuccessDriver As Boolean = False
 		Dim SuccessPassenger As Boolean = False
 		Dim Fail As Boolean = True
@@ -4863,15 +4380,14 @@ Public Class frmMain
 			If Not SuccessPassenger Then TabControlsMain.SelectedTab = tabPagePassCam
 			'
 			If SuccessDriver And SuccessPassenger Then
-				''PLC_DriverCLX.Write(PLC_Tags.plcTag_PrimerCheckPass, 1)
-				''PLC_DriverCLX.Write(PLC_Tags.plcTag_PrimerCheckDone, 1)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_PrimerCheckPass, 1)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_PrimerCheckDone, 1)
 				lblmessagedesc.Text = "Primer Check Inpection Passed"
 			Else
-				''PLC_DriverCLX.Write(PLC_Tags.plcTag_PrimerCheckFail, 1)
-				''PLC_DriverCLX.Write(PLC_Tags.plcTag_PrimerCheckDone, 1)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_PrimerCheckFail, 1)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_PrimerCheckDone, 1)
 				lblmessagedesc.Text = "Primer Check Inpection Failed"
 			End If
-
 			If DriverBlobArea > 0 Then
 				If (DriverBlobArea > DriverBlobVariance) Then
 					lblDriverInspection.BackColor = Color.YellowGreen
@@ -4879,13 +4395,9 @@ Public Class frmMain
 					lblDriverInspection.BackColor = Color.Red
 					lblVisionMessageDriver.Text = "Primer Area Below Threshold levels"
 					lblVisionMessageDriver.BackColor = Color.Red
-					'TODO BAB
-					'Return False
 				End If
 			Else
 				lblVisionMessageDriver.BackColor = Color.Red
-				'TODO BAB
-				'Return False
 			End If
 			INRoutines = False
 		Catch ex As Exception
@@ -4901,12 +4413,12 @@ Public Class frmMain
 			If mnuTabSwitching.Checked Then TabControlsMain.SelectedTab = tabPageCenterCam
 			Success = Locate(Camera.Center, True, True)
 			If Not Success Then
-				'PLC_DriverCLX.Write(PLC_Tags.plcTag_HPrimerFail, 1)
-				'PLC_DriverCLX.Write(PLC_Tags.plcTag_HPrimerDone, 1)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_HPrimerFail, 1)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_HPrimerDone, 1)
 				lblmessagedesc.Text = "H Primer Check Inpection Failed"
 			Else
-				'PLC_DriverCLX.Write(PLC_Tags.plcTag_HPrimerPass, 1)
-				'PLC_DriverCLX.Write(PLC_Tags.plcTag_HPrimerDone, 1)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_HPrimerPass, 1)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_HPrimerDone, 1)
 				lblmessagedesc.Text = "H Primer Check Inpection Passed"
 			End If
 			INRoutines = False
@@ -4916,37 +4428,36 @@ Public Class frmMain
 		End Try
 	End Sub
 
-	Public Sub PLC_Bracket_Conveyor_Location()
+	Public Sub PLC_Bracket_DialTable_Location()
 		Try
 			If mnuTabSwitching.Checked Then TabControlsMain.SelectedTab = tabpageBracketLocateAtConveyor
 
 			INRoutines = True
 			Dim Success As Boolean
 			'
-			Success = HelperCamBracket.SetSimpleFeature("exposure", updnExposureBracketConveyor.Value, Camera.BracketAtConveyor)
-			Success = HelperCamBracket.SetSimpleFeature("gain", updnContrastBracketConveyor.Value, Camera.BracketAtConveyor)
-			Snap(Camera.BracketAtConveyor)
+			Success = HelperCamBracket.SetSimpleFeature("exposure", updnExposureBracketConveyor.Value, Camera.BracketAtDialTable)
+			Success = HelperCamBracket.SetSimpleFeature("gain", updnContrastBracketConveyor.Value, Camera.BracketAtDialTable)
+			Snap(Camera.BracketAtDialTable)
 			If Not Success Then ShowVBErrors("PLC_Bracket_Conveyor_Location", "Exposure/Gain Conveyor Location Unable to set")
 			'
-			Success = Locate(Camera.BracketAtConveyor, True, False)
+			Success = Locate(Camera.BracketAtDialTable, True, False)
 			If Success Then
-				PLC_DriverCLX.Write((PLC_Tags.plcTag_BracketConveyorLocationX), PLC_IO_Write_Bracket(1).Vision_Data_X)
-				PLC_DriverCLX.Write((PLC_Tags.plcTag_BracketConveyorLocationY), PLC_IO_Write_Bracket(1).Vision_Data_Y)
-				PLC_DriverCLX.Write((PLC_Tags.plcTag_BracketConveyorLocationR), PLC_IO_Write_Bracket(1).Vision_Data_R)
-				PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketConveyorLocationDone, 1)
-				PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketConveyorLocationStat, PLC_IO_Write_Bracket(1).VisStat)
+				PLC_DriverCLX.Write((PLC_Tags.plcTag_BracketDialTableLocationX), PLC_IO_Write_Bracket(1).Vision_Data_X)
+				PLC_DriverCLX.Write((PLC_Tags.plcTag_BracketDialTableLocationY), PLC_IO_Write_Bracket(1).Vision_Data_Y)
+				PLC_DriverCLX.Write((PLC_Tags.plcTag_BracketDialTableLocationR), PLC_IO_Write_Bracket(1).Vision_Data_R)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketDialTableLocationDone, 1)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketDialTableLocationStat, PLC_IO_Write_Bracket(1).VisStat)
 				lblmessagedesc.Text = "Bracket Conveyor Locator Passed"
 			Else
-				PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketConveyorLocationStat, PLC_IO_Write_Bracket(1).VisStat)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketDialTableLocationStat, PLC_IO_Write_Bracket(1).VisStat)
 				lblmessagedesc.Text = "Bracket Conveyor Locator Failed"
-				PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketConveyorLocationDone, 1)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketDialTableLocationDone, 1)
 			End If
 			INRoutines = False
 		Catch ex As Exception
 			ShowVBErrors("PLC_Bracket_Conveyor_Location", ex.Message)
 			INRoutines = False
 		End Try
-
 	End Sub
 
 	Public Sub PLC_Vision_Camera_Verify()
@@ -4962,13 +4473,13 @@ Public Class frmMain
 			'
 			Success = Locate(Camera.BracketVerify, True, True)
 			If Not Success Then
-				'PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketVerifyFail, 1)
-				'PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketVerifyDone, 1)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketVerifyFail, 1)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketVerifyDone, 1)
 				lblmessagedesc.Text = "Bracket Verification Failed "
 				lblBracketInspectionVerify.BackColor = Color.Red
 			Else
-				'PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketVerifyPass, 1)
-				'PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketVerifyDone, 1)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketVerifyPass, 1)
+				PLC_DriverCLX.Write(PLC_Tags.plcTag_BracketVerifyDone, 1)
 				lblmessagedesc.Text = "Bracket Verification Passed "
 				lblBracketInspectionVerify.BackColor = Color.YellowGreen
 			End If
@@ -5046,7 +4557,8 @@ Public Class frmMain
 
 #End Region
 
-	Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-		LoadBracket()
+	Private Sub BtnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
+		DrawRectangleMarker(HSDisplayBracketConveyor, "Search Region 1", 100, 100, 0, 100, 200, HSDISPLAYLib.hsColor.hsGreen, hsRectangleMarkerConstraints.hsRectangleCornerBasedEdition)
 	End Sub
+
 End Class
