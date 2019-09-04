@@ -155,7 +155,7 @@ Public Class frmMain
 			'TODO
 			'Snap some pictures
 			'Snap(Camera.LocateGlass)
-			'Snap(Camera.BracketAtConveyor)
+			Snap(Camera.BracketAtConveyor)
 			'Snap(Camera.BracketTape)
 			'Snap(Camera.BracketVerify)
 			'Snap(Camera.BracketPrimer)
@@ -837,7 +837,6 @@ Public Class frmMain
 			InTraining = False
 		End Try
 	End Sub
-
 	Private Sub btnTrainExisting_Click(ByVal Sender As Object, ByVal eventArgs As System.EventArgs) Handles btnTrainExistingLocateGlass.Click, btnTrainExistingBracketConveyor.Click,
 					btnTrainExistingBracketTape.Click, btnTrainExistingCenter.Click, btnTrainExistingCenterVerify.Click, btnTrainExistingDriver.Click,
 					btnTrainExistingPassenger.Click, btnTrainExistingBracketPrimer.Click
@@ -905,9 +904,8 @@ Public Class frmMain
 			InTraining = False
 		End Try
 	End Sub
-
 	Private Sub btnSnap_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSnapLocateGlass.Click, btnSnapBracketConveyor.Click, btnSnapBracketTape.Click,
-					btnSnapCenter.Click, btnSnapCenterVerify.Click, btnSnapDriver.Click, btnSnapPassenger.Click, btnSnapBracketPrimer.Click
+					btnSnapCenter.Click, btnSnapCenterVerify.Click, btnSnapDriver.Click, btnSnapPassenger.Click
 		Dim btn As Button
 		btn = DirectCast(sender, Button)
 		Try
@@ -919,16 +917,6 @@ Public Class frmMain
 						Application.DoEvents()
 						If chkSnapRepeatLocateGlass.Checked Then DelayTimer(200)
 					Loop While chkSnapRepeatLocateGlass.Checked
-				Case btnSnapBracketPrimer.Name
-					HelperCamTapePrimer.SetSimpleFeature("exposure", updnExposureBracketPrimer.Value, Camera.BracketPrimer)
-					HelperCamTapePrimer.SetSimpleFeature("gain", updnContrastBracketPrimer.Value, Camera.BracketPrimer)
-					Snap(Camera.BracketPrimer)
-					Do
-						Application.DoEvents()
-						Snap(Camera.BracketPrimer)
-						Application.DoEvents()
-						If chkSnapRepeatBracketPrimer.Checked Then DelayTimer(200)
-					Loop While chkSnapRepeatBracketPrimer.Checked
 				Case btnSnapCenterVerify.Name
 					HelperCamBracket.SetSimpleFeature("exposure", updnExposureCenterVerify.Value, Camera.BracketVerify)
 					HelperCamBracket.SetSimpleFeature("gain", updnContrastCenterVerify.Value, Camera.BracketVerify)
@@ -2217,15 +2205,6 @@ Public Class frmMain
 					HSDisplayCenterBracketVerify.RefreshDisplay()
 					btnSnapCenterVerify.Enabled = True
 					lblCameraTimeBracketVerify.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
-				Case Camera.BracketPrimer
-					Display = HSDisplayBracketPrimer
-					Display.RefreshDisplay()
-					btnSnapBracketPrimer.Enabled = False
-					'Snap the picture, try 2nd time if unsuccessful
-					If Not GetCameraImage(Side) Then GetCameraImage(Side)
-					HSDisplayBracketPrimer.RefreshDisplay()
-					btnSnapBracketPrimer.Enabled = True
-					lblCameraTimeBracketPrimer.Text = (VB.Timer - StartTimer).ToString("N2") & " Secs."
 			End Select
 			'Snap the picture
 			GC.Collect()
