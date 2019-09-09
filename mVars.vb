@@ -24,10 +24,18 @@ Module mVars
 	Public DriverBlobArea As Int64
 	Public CenterBlobArea As Int64
 	Public PassengerBlobArea As Int64
+	Public TapeBlobArea(5) As Int64
+	Public TapeCoverArea(5) As Int64
+	Public BracketPrimer(5) As Int64
 	Public SavedCenterBlobArea As Int64
 	Public SavedDriverBlobArea As Int64
 	Public SavedPassengerBlobArea As Int64
+	Public SavedTapeBlobAreaTopLeft As Int64
+	Public SavedTapeBlobAreaTopRight As Int64
+	Public SavedTapeBlobAreaBottomLeft As Int64
+	Public SavedTapeBlobAreaBottomRight As Int64
 
+	Public CurrentTapeArea(8) As Boolean
 	Public eText As Boolean
 	Public CamLocation(12) As String
 	Public ConfigName(12) As String
@@ -77,6 +85,7 @@ Module mVars
 	Public ReferenceMean As Int64
 	Public BracketPrimerFail As Boolean = False
 
+	
 
 	'Servo related
 	Public PickupLimit As LimitStruct
@@ -113,16 +122,24 @@ Module mVars
 		Public plcTag_BracketGlassLocationStat As String
 		'Location of Bracket at conveyor
 		Public plcTag_BracketConveyorLocationStart As String
-		Public plcTag_BracketDialTableLocationX As String
-		Public plcTag_BracketDialTableLocationY As String
-		Public plcTag_BracketDialTableLocationR As String
-		Public plcTag_BracketDialTableLocationDone As String
-		Public plcTag_BracketDialTableLocationStat As String
+		Public plcTag_BracketConveyorLocationX As String
+		Public plcTag_BracketConveyorLocationY As String
+		Public plcTag_BracketConveyorLocationR As String
+		Public plcTag_BracketConveyorLocationDone As String
+		Public plcTag_BracketConveyorLocationStat As String
 		'Location of Bracket on Glass
 		Public plcTag_BracketVerifyStart As String
 		Public plcTag_BracketVerifyPass As String
 		Public plcTag_BracketVerifyFail As String
 		Public plcTag_BracketVerifyDone As String
+		'bracket Tape Verification
+		Public plcTag_BracketTapeStart As String
+		Public plcTag_BracketTapePass As String
+		Public plcTag_BracketTapeFail As String
+		Public plcTag_BracketTapeDone As String
+		'Glue
+		Public plcTag_LaserGluePass As String
+		Public plcTag_LaserGlueFail As String
 		'Lighting
 		Public plcTag_OverLight As String
 		Public plcTag_Backlight As String
@@ -133,6 +150,11 @@ Module mVars
 		Public plcTag_HPrimerPass As String
 		Public plcTag_HPrimerFail As String
 		Public plcTag_HPrimerDone As String
+		'Bracket Primer Check
+		Public plcTag_BracketPrimerStart As String
+		Public plcTag_BracketPrimerDone As String
+		Public plcTag_BracketPrimerPassed As String
+		Public plcTag_BracketPrimerFail As String
 	End Structure
 
 	Public DebugValue As String
@@ -244,9 +266,11 @@ Module mVars
 		Driver = 1
 		Center = 2
 		Passenger = 3
-		BracketAtDialTable = 4
+		BracketAtConveyor = 4
 		GoCator = 5
+		BracketTape = 6
 		BracketVerify = 7
+		BracketPrimer = 8
 	End Enum
 
 End Module
